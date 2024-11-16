@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import LoginComponent from "@/components/Login/Login";
+import RegisterComponent from "@/components/Register/Register";
 export default function Login() {
   return (
     <div className="w-full flex flex-row h-screen">
@@ -11,7 +11,7 @@ export default function Login() {
         />
       </div>
       <div className="w-[50%] p-6 flex justify-center h-full items-center">
-        <LoginComponent />
+        <RegisterComponent />
       </div>
     </div>
   );
