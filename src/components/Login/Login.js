@@ -1,12 +1,20 @@
 "use client";
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button, Select } from "reactstrap";
 import axios from "axios";
 import { useState } from "react";
-export default function LoginComponent() {
+import { roles } from "@/constants/dataconstants"
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+
+export default function LoginComponent({ onChange, defaultValue = roles[1]  }) {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
+    role: defaultValue
   });
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(defaultValue);
+
   const handleSubmit = async () => {
     const response = await axios.post("/api/login", loginData);
     console.log(response);
@@ -15,6 +23,15 @@ export default function LoginComponent() {
   const handleRegister = async () => {
     const response = await axios.post("/api/register", loginData);
     console.log(response);
+  };
+
+  const toggle = () => setDropdownOpen(!dropdownOpen);
+  
+  const handleSelect = (role) => {
+    setSelectedRole(role);
+    if (onChange) {
+      onChange(role); // Notify parent about the role change
+    }
   };
   
   return (
@@ -44,6 +61,19 @@ export default function LoginComponent() {
         />
         <Label for="examplePassword">Password</Label>
       </FormGroup>{" "}
+      <FormGroup floating>
+      <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        <DropdownToggle caret>{selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}</DropdownToggle>
+        <DropdownMenu>
+          {roles.map((currRole) => (
+            <DropdownItem key={currRole} onClick={() => {setLoginData({...loginData, role: currRole})
+            handleSelect(currRole)}}>
+              {currRole.charAt(0).toUpperCase() + currRole.slice(1)} {/* Capitalize the first letter */}
+            </DropdownItem> 
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      </FormGroup>
       <Button onClick={() => handleSubmit()}>Submit</Button>
       <Button onClick={() => handleRegister()}>Register</Button>
     </Form>

@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, role } = body;
     const getUser = await User.findOne({ email });
     if (getUser) {
       return NextResponse.json(
@@ -21,7 +21,9 @@ export async function POST(request) {
     }
     const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = new User({ email, password: hashedPassword });
+    const localRole = role
+    const user = new User({ email, password: hashedPassword, role: localRole});
+    console.log(user);
     await user.save();
     return NextResponse.json({ user });
   } catch (e) {

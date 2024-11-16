@@ -7,26 +7,16 @@ import bcrypt from "bcrypt";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, role } = body;
     const getUser = await User.findOne({ email });
-    if (!getUser) {
+    const comparePassword = await bcrypt.compare(password, getUser.password);
+    if (!getUser || !comparePassword) {
       return NextResponse.json(
         {
           message: "User email or password is incorrect",
         },
         {
           status: 404,
-        }
-      );
-    }
-    const comparePassword = await bcrypt.compare(password, getUser.password);
-    if (!comparePassword) {
-      return NextResponse.json(
-        {
-          message: "User email or password is incorrect",
-        },
-        {
-          status: 400,
         }
       );
     }
