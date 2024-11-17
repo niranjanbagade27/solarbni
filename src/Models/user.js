@@ -32,6 +32,14 @@ const userSchema = new Schema({
     type: String,
     default: userRoles.BASIC,
   },
+  phone: {
+    type: String,
+    required: true,
+  },
+  gstnumber: {
+    type: String,
+    required: true,
+  },
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
