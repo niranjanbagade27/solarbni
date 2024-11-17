@@ -2,19 +2,26 @@
 import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 import axios from "axios";
 import { useState } from "react";
+import { userRoles } from "@/constants/role";
 import { toast } from "react-toastify";
 export default function LoginComponent() {
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
-  const handleSubmit = async () => {
-    const response = await axios.post("/api/login", loginData);
-    toast("Login Successful");
+  const handleRegister = async () => {
+    const response = await axios.post("/api/register", {
+      ...loginData,
+      firstName: "Anuj",
+      lastName: "Singh",
+      role: userRoles.ADMIN,
+    });
+    toast("Register Successful");
     setTimeout(() => {
-      window.location.href = "/profile";
-    },3000);
+      window.location.href = "/login";
+    }, 3000);
   };
+
   return (
     <Form style={{ width: "100%" }}>
       <FormGroup floating>
@@ -42,7 +49,7 @@ export default function LoginComponent() {
         />
         <Label for="examplePassword">Password</Label>
       </FormGroup>{" "}
-      <Button onClick={() => handleSubmit()}>Submit</Button>
+      <Button onClick={() => handleRegister()}>Register</Button>
     </Form>
   );
 }

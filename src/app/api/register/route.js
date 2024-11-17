@@ -3,12 +3,18 @@ dbConnect();
 import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
+import sanatizeHtml from "sanitize-html";
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
-    const getUser = await User.findOne({ email });
+    const { email, password, firstName, lastName, role } = body;
+    const sanitizedEmail = sanatizeHtml(email);
+    const sanitizedPassword = sanatizeHtml(password);
+    const sanitizedFirstName = sanatizeHtml(firstName);
+    const sanitizedLastName = sanatizeHtml(lastName);
+    const sanitizedRole = sanatizeHtml(role);
+    const getUser = await User.findOne({ email: sanitizedEmail });
     if (getUser) {
       return NextResponse.json(
         {
@@ -20,8 +26,14 @@ export async function POST(request) {
       );
     }
     const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const user = new User({ email, password: hashedPassword });
+    const hashedPassword = await bcrypt.hash(sanitizedPassword, salt);
+    const user = new User({
+      email: sanitizedEmail,
+      password: hashedPassword,
+      firstName: sanitizedFirstName,
+      lastName: sanitizedLastName,
+      role: sanitizedRole,
+    });
     await user.save();
     return NextResponse.json({ user });
   } catch (e) {

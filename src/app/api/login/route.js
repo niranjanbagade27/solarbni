@@ -1,14 +1,16 @@
-import dbConnect from "@/lib/mongodb";
-dbConnect();
 import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import sanitizeHtml from "sanitize-html";
 
 export async function POST(request) {
   try {
     const body = await request.json();
     const { email, password } = body;
-    const getUser = await User.findOne({ email });
+    const sanitizedEmail = sanitizeHtml(email);
+    const sanitizedPassword = sanitizeHtml(password);
+    const getUser = await User.findOne({ email: sanitizedEmail });
     if (!getUser) {
       return NextResponse.json(
         {
@@ -19,7 +21,10 @@ export async function POST(request) {
         }
       );
     }
-    const comparePassword = await bcrypt.compare(password, getUser.password);
+    const comparePassword = await bcrypt.compare(
+      sanitizedPassword,
+      getUser.password
+    );
     if (!comparePassword) {
       return NextResponse.json(
         {
@@ -31,9 +36,17 @@ export async function POST(request) {
       );
     }
     const {
-      _doc: { _id, password: getUserPassword, ...user },
+      _doc: { password: getUserPassword, ...user },
     } = getUser;
-    return NextResponse.json({ user }, { status: 200 });
+    const token = jwt.sign({ user }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    const response = NextResponse.json({ token, user }, { status: 200 });
+    response.headers.set(
+      "Set-Cookie",
+      `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`
+    );
+    return response;
   } catch (e) {
     return NextResponse.json(
       {
