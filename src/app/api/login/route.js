@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
-dbConnect()
 export async function POST(request) {
   try {
+    console.log("Entered login route");
     const body = await request.json();
     const { email, password } = body;
+    console.log("got email and password")
     const sanitizedEmail = sanitizeHtml(email);
     const sanitizedPassword = sanitizeHtml(password);
+    console.log("sanitized email and password")
     const getUser = await User.findOne({ email: sanitizedEmail });
+    console.log("got user", getUser)
     if (!getUser) {
       return NextResponse.json(
         {
