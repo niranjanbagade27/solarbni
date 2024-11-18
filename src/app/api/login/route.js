@@ -3,6 +3,8 @@ import User from "@/Models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
+import dbConnect from "@/lib/mongodb";
+dbConnect();
 export async function POST(request) {
   try {
     console.log("inside login route");
@@ -11,7 +13,11 @@ export async function POST(request) {
     console.log("got email and password", email, password);
     const sanitizedEmail = sanitizeHtml(email);
     const sanitizedPassword = sanitizeHtml(password);
-    console.log("sanitized email and password", sanitizedEmail, sanitizedPassword);
+    console.log(
+      "sanitized email and password",
+      sanitizedEmail,
+      sanitizedPassword
+    );
     const getUser = await User.findOne({ email: sanitizedEmail });
     console.log("got user", getUser);
     if (!getUser) {
