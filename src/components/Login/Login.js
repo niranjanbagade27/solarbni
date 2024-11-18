@@ -9,11 +9,15 @@ export default function LoginComponent() {
     password: "",
   });
   const handleSubmit = async () => {
-    const response = await axios.post("/api/login", loginData);
+    console.log("vercel base path", rocess.env.VERCEL_BASE_PATH);
+    const response = await axios.post(
+      `${process.env.VERCEL_BASE_PATH}/api/login`,
+      loginData
+    );
     toast("Login Successful");
     setTimeout(() => {
       window.location.href = "/profile";
-    },3000);
+    }, 3000);
   };
   return (
     <Form style={{ width: "100%" }}>
