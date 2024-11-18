@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import InverterFaultReason from "@/Models/inverterfaultreason";
+import InverterFaultReason from "@/Models/inverterFaultReason";
 import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
 export async function GET(request) {
   try {
