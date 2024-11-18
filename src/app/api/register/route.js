@@ -1,5 +1,3 @@
-import dbConnect from "@/lib/mongodb";
-dbConnect();
 import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
