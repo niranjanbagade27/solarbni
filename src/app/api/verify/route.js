@@ -16,7 +16,6 @@ export async function GET(request) {
       );
     }
     const decoded = await jsonwebtoken.verify(token, process.env.JWT_SECRET);
-    console.log("@@@@@@@@@@@@@@@@@@@", decoded);
     const getUser = await User.findOne({ _id: decoded.user._id });
     if (!getUser) {
       return NextResponse.json(

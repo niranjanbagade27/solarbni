@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
-
+dbConnect()
 export async function POST(request) {
   try {
     const body = await request.json();
