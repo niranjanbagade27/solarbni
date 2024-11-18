@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import InverterFaultReason from "@/Models/inverterFaultReason";
 import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
+import dbConnect from "@/util/mongodb";
 export async function GET(request) {
   try {
+    await dbConnect();
     const inverterFaultReasons = await InverterFaultReason.find();
     return NextResponse.json({ inverterFaultReasons });
   } catch (e) {
@@ -25,7 +27,7 @@ export async function POST(request) {
     const id = getCategory[0]._id;
     const newQuestions = [
       ...getCategory[0].questions,
-        capitalizeFirstLetter(question),
+      capitalizeFirstLetter(question),
     ];
     const updatedCategory = await InverterFaultReason.findByIdAndUpdate(
       id,
