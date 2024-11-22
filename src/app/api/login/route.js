@@ -7,7 +7,6 @@ import dbConnect from "@/lib/mongodb";
 
 export async function POST(request) {
   try {
-    await dbConnect();
     console.log("inside login route");
     const body = await request.json();
     const { email, password } = body;
@@ -19,6 +18,7 @@ export async function POST(request) {
       sanitizedEmail,
       sanitizedPassword
     );
+    await dbConnect();
     const getUser = await User.findOne({ email: sanitizedEmail });
     console.log("got user", getUser);
     if (!getUser) {
