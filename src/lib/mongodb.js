@@ -32,6 +32,7 @@ const dbConnect = async () => {
 
   try {
     cached.conn = await cached.promise;
+    console.log("Connected to db");
   } catch (e) {
     cached.promise = null;
     throw e;

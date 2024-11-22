@@ -51,9 +51,16 @@ export async function POST(request) {
       const {
         _doc: { password: getUserPassword, ...user },
       } = getUser;
-      const token = jwt.sign({ user }, process.env.JWT_SECRET, {
+      console.log(
+        "matched user",
+        user,
+        process.env.JWT_SECRET,
+        `${process.env.JWT_SECRET}`
+      );
+      const token = jwt.sign({ user }, `${process.env.JWT_SECRET}`, {
         expiresIn: "1h",
       });
+      console.log("got token", token);
       const response = NextResponse.json({ token, user }, { status: 200 });
       response.headers.set(
         "Set-Cookie",
