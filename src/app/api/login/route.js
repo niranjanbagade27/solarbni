@@ -7,20 +7,21 @@ import dbConnect from "@/lib/mongodb";
 
 export async function POST(request) {
   let retries = true;
+  const body = await request.json();
+  const { email, password } = body;
+  console.log("got email and password", email, password);
+  const sanitizedEmail = sanitizeHtml(email);
+  const sanitizedPassword = sanitizeHtml(password);
+  console.log(
+    "sanitized email and password",
+    sanitizedEmail,
+    sanitizedPassword
+  );
   while (retries) {
     try {
-      console.log("inside login route");
-      const body = await request.json();
-      const { email, password } = body;
-      console.log("got email and password", email, password);
-      const sanitizedEmail = sanitizeHtml(email);
-      const sanitizedPassword = sanitizeHtml(password);
-      console.log(
-        "sanitized email and password",
-        sanitizedEmail,
-        sanitizedPassword
-      );
       await dbConnect();
+      console.log("inside login route");
+
       const getUser = await User.findOne({ email: sanitizedEmail });
       console.log("got user", getUser);
       if (!getUser) {
