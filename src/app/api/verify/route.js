@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import jsonwebtoken from "jsonwebtoken";
+import dbConnect from "@/lib/mongodb";
 
 export async function GET(request) {
   try {
@@ -47,3 +48,5 @@ export async function GET(request) {
     );
   }
 }
+
+dbConnect();
