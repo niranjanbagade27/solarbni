@@ -7,19 +7,11 @@ import dbConnect from "@/lib/mongodb";
 
 export async function POST(request) {
   try {
-    console.log("inside login route");
     const body = await request.json();
     const { email, password } = body;
-    console.log("got email and password", email, password);
     const sanitizedEmail = sanitizeHtml(email);
     const sanitizedPassword = sanitizeHtml(password);
-    console.log(
-      "sanitized email and password",
-      sanitizedEmail,
-      sanitizedPassword
-    );
     const getUser = await User.findOne({ email: sanitizedEmail });
-    console.log("got user", getUser);
     if (!getUser) {
       return NextResponse.json(
         {
@@ -47,16 +39,9 @@ export async function POST(request) {
     const {
       _doc: { password: getUserPassword, ...user },
     } = getUser;
-    console.log(
-      "matched user",
-      user,
-      process.env.JWT_SECRET,
-      `${process.env.JWT_SECRET}`
-    );
     const token = jwt.sign({ user }, `${process.env.JWT_SECRET}`, {
       expiresIn: "1h",
     });
-    console.log("got token", token);
     const response = NextResponse.json({ token, user }, { status: 200 });
     response.headers.set(
       "Set-Cookie",

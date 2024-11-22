@@ -9,7 +9,6 @@ export default function LoginComponent() {
     password: "",
   });
   const handleSubmit = async () => {
-    console.log("vercel base path", process.env.NEXT_PUBLIC_VERCEL_BASE_PATH);
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/login`,
       loginData
