@@ -4,21 +4,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
-async function retryDbConnection(retries = 3, delay = 1000) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      await dbConnect();
-      return;
-    } catch (e) {
-      if (i === retries - 1) throw e;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-}
 
 export async function POST(request) {
   try {
-    await retryDbConnection();
+    await dbConnect();
     console.log("inside login route");
     const body = await request.json();
     const { email, password } = body;
