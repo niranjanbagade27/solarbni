@@ -17,6 +17,7 @@ export async function POST(request) {
       sanitizedEmail,
       sanitizedPassword
     );
+    await new Promise(resolve => setTimeout(resolve, 2000));
     const getUser = await User.findOne({ email: sanitizedEmail });
     console.log("got user", getUser);
     if (!getUser) {
