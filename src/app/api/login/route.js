@@ -4,9 +4,21 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
+async function retryDbConnection(retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await dbConnect();
+      return;
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
 export async function POST(request) {
   try {
-    await dbConnect();
+    await retryDbConnection();
     console.log("inside login route");
     const body = await request.json();
     const { email, password } = body;
@@ -18,7 +30,6 @@ export async function POST(request) {
       sanitizedEmail,
       sanitizedPassword
     );
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     const getUser = await User.findOne({ email: sanitizedEmail });
     console.log("got user", getUser);
     if (!getUser) {
