@@ -6,8 +6,8 @@ import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 
 export async function POST(request) {
-  let retries = 3;
-  while (retries > 0) {
+  let retries = true;
+  while (retries) {
     try {
       console.log("inside login route");
       const body = await request.json();
@@ -58,20 +58,12 @@ export async function POST(request) {
         "Set-Cookie",
         `token=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600; Path=/`
       );
+      retries = false;
       return response;
     } catch (e) {
-      retries -= 1;
-      if (retries === 0) {
-        return NextResponse.json(
-          {
-            message: "Error while logging user",
-          },
-          {
-            status: 500,
-          }
-        );
-      }
+      console.log("inside catch block", e);
       await new Promise((resolve) => setTimeout(resolve, 2000));
+      continue;
     }
   }
 }
