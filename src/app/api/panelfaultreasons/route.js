@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import PanelFaultReason from "@/Models/panelFaultReason";
 import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
+import dbConnect from "@/lib/mongodb";
 export async function GET(request) {
   try {
     const panelFaultReasons = await PanelFaultReason.find();
@@ -91,3 +92,5 @@ export async function PUT(request) {
     );
   }
 }
+
+dbConnect();

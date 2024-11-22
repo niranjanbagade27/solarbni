@@ -4,7 +4,6 @@ import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
 import dbConnect from "@/lib/mongodb";
 export async function GET(request) {
   try {
-    await dbConnect();
     const inverterFaultReasons = await InverterFaultReason.find();
     return NextResponse.json({ inverterFaultReasons });
   } catch (e) {
@@ -93,3 +92,5 @@ export async function PUT(request) {
     );
   }
 }
+
+dbConnect();

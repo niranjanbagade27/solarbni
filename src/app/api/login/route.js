@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 export async function POST(request) {
-  await dbConnect();
   try {
     console.log("inside login route");
     const body = await request.json();
@@ -84,3 +83,5 @@ export async function GET(request) {
     );
   }
 }
+
+dbConnect();
