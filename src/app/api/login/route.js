@@ -6,6 +6,7 @@ import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 export async function POST(request) {
   try {
+    await dbConnect();
     console.log("inside login route");
     const body = await request.json();
     const { email, password } = body;
@@ -17,7 +18,7 @@ export async function POST(request) {
       sanitizedEmail,
       sanitizedPassword
     );
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     const getUser = await User.findOne({ email: sanitizedEmail });
     console.log("got user", getUser);
     if (!getUser) {
@@ -84,5 +85,3 @@ export async function GET(request) {
     );
   }
 }
-
-dbConnect();
