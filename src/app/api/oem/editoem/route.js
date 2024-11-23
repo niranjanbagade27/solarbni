@@ -6,6 +6,7 @@ import { userRoles } from "@/constants/role";
 
 export async function PUT(request) {
   try {
+    await dbConnect();
     const body = await request.json();
     const { email, password, firstName, lastName, gstNumber, phone } = body;
     const sanitizedEmail = sanitizeHtml(email);
@@ -51,5 +52,3 @@ export async function PUT(request) {
     );
   }
 }
-
-dbConnect();

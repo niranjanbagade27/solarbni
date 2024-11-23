@@ -4,6 +4,7 @@ import { userRoles } from "@/constants/role";
 import dbConnect from "@/lib/mongodb";
 export async function GET(request) {
   try {
+    await dbConnect();
     const getAllUsers = await User.find({ role: userRoles.OEM }).select(
       "-password"
     );
@@ -19,4 +20,3 @@ export async function GET(request) {
     );
   }
 }
-dbConnect()

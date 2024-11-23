@@ -4,6 +4,7 @@ import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
 import dbConnect from "@/lib/mongodb";
 export async function GET(request) {
   try {
+    await dbConnect();
     const inverterFaultReasons = await InverterFaultReason.find();
     return NextResponse.json({ inverterFaultReasons });
   } catch (e) {
@@ -20,6 +21,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
+    await dbConnect();
     const body = await request.json();
     const { question } = body;
     const getCategory = await InverterFaultReason.find();
@@ -58,6 +60,7 @@ export async function POST(request) {
 
 export async function PUT(request) {
   try {
+    await dbConnect();
     const body = await request.json();
     const { question } = body;
     const getCategory = await InverterFaultReason.find();
@@ -92,5 +95,3 @@ export async function PUT(request) {
     );
   }
 }
-
-await dbConnect();

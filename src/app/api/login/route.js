@@ -7,6 +7,7 @@ import dbConnect from "@/lib/mongodb";
 
 export async function POST(request) {
   try {
+    await dbConnect();
     const body = await request.json();
     const { email, password } = body;
     const sanitizedEmail = sanitizeHtml(email);
@@ -60,5 +61,3 @@ export async function POST(request) {
     );
   }
 }
-
-await dbConnect();
