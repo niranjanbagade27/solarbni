@@ -93,4 +93,4 @@ export async function PUT(request) {
   }
 }
 
-dbConnect();
+await dbConnect();
