@@ -61,20 +61,4 @@ export async function POST(request) {
   }
 }
 
-export async function GET(request) {
-  try {
-    const getAllUsers = await User.find({});
-    return NextResponse.json({ users: getAllUsers }, { status: 200 });
-  } catch (e) {
-    return NextResponse.json(
-      {
-        message: "Error while connecting to db",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
-}
-
 await dbConnect();

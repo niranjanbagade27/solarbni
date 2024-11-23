@@ -3,20 +3,25 @@ import { Form, FormGroup, Label, Input, Button } from "reactstrap";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import BounceLoader from "react-spinners/BounceLoader";
+import { spinnerColor } from "@/constants/colors";
 export default function LoginComponent() {
+  const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
   const handleSubmit = async () => {
+    setIsLoading(true);
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/login`,
       loginData
     );
     toast("Login Successful");
+    setIsLoading(false);
     setTimeout(() => {
       window.location.href = "/profile";
-    }, 3000);
+    }, 2000);
   };
   return (
     <Form style={{ width: "100%" }}>
@@ -45,7 +50,12 @@ export default function LoginComponent() {
         />
         <Label for="examplePassword">Password</Label>
       </FormGroup>{" "}
-      <Button onClick={() => handleSubmit()}>Submit</Button>
+      {!isLoading && (
+        <Button color="primary" onClick={() => handleSubmit()}>
+          Submit
+        </Button>
+      )}
+      {isLoading && <BounceLoader color={spinnerColor} />}
     </Form>
   );
 }
