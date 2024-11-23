@@ -12,7 +12,7 @@ import UpdateContractor from "@/components/AdminActions/UpdateContractor/UpdateC
 import AdminProfile from "@/components/AdminActions/AdminProfile/AdminProfile";
 export default function AdminProfilePage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
-  const [currentTab, setCurrentTab] = useState(adminProfileTabs.INVERTER);
+  const [currentTab, setCurrentTab] = useState(adminProfileTabs.OEM);
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";

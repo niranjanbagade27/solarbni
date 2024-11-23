@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
-import sanatizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 export async function POST(request) {
   try {
+    await dbConnect();
     const body = await request.json();
-    const { email, password, firstName, lastName, role } = body;
-    const sanitizedEmail = sanatizeHtml(email);
-    const sanitizedPassword = sanatizeHtml(password);
-    const sanitizedFirstName = sanatizeHtml(firstName);
-    const sanitizedLastName = sanatizeHtml(lastName);
-    const sanitizedRole = sanatizeHtml(role);
-    const getUser = await User.findOne({ email: sanitizedEmail });
+    const { email, password, firstName, lastName, role, gstNumber, phone } =
+      body;
+    const getUser = await User.findOne({ email });
     if (getUser) {
       return NextResponse.json(
         {
@@ -24,16 +20,20 @@ export async function POST(request) {
       );
     }
     const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-    const hashedPassword = await bcrypt.hash(sanitizedPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
     const user = new User({
-      email: sanitizedEmail,
+      email,
       password: hashedPassword,
-      firstName: sanitizedFirstName,
-      lastName: sanitizedLastName,
-      role: sanitizedRole,
+      firstName,
+      lastName,
+      role,
+      gstnumber: gstNumber,
+      phone,
     });
     await user.save();
-    return NextResponse.json({ user });
+    const { password: savedUserPassword, ...userDetailsWithoutPassword } =
+      user.toObject();
+    return NextResponse.json({ user: userDetailsWithoutPassword });
   } catch (e) {
     return NextResponse.json(
       {
@@ -45,5 +45,3 @@ export async function POST(request) {
     );
   }
 }
-
-dbConnect();
