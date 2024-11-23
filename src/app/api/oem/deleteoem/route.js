@@ -6,6 +6,7 @@ import { userRoles } from "@/constants/role";
 
 export async function POST(request) {
   try {
+    await dbConnect();
     const body = await request.json();
     const { email } = body;
     const getUser = await User.findOne({
@@ -38,5 +39,3 @@ export async function POST(request) {
     );
   }
 }
-
-dbConnect()

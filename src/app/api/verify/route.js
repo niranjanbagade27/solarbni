@@ -5,6 +5,7 @@ import dbConnect from "@/lib/mongodb";
 
 export async function GET(request) {
   try {
+    await dbConnect();
     const token = request.cookies.get("token").value;
     if (!token) {
       return NextResponse.json(
@@ -51,5 +52,3 @@ export async function GET(request) {
     );
   }
 }
-
-dbConnect();
