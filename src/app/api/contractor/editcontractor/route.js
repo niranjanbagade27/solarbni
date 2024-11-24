@@ -38,7 +38,7 @@ export async function PUT(request) {
         phone: sanitizedPhone,
         ...(sanitizedPassword && { password: sanitizedPassword }),
       },
-      { new: true }
+      { new: true, w: "majority" }
     ).select("-password");
     return NextResponse.json({ user: updatedUser });
   } catch (e) {
