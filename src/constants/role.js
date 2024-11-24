@@ -1,6 +1,6 @@
 export const userRoles = {
   ADMIN: "admin",
   OEM: "oem",
-  MANUFACTURER: "manufacturer",
+  CONTRACTOR: "contractor",
   BASIC: "basic",
 };

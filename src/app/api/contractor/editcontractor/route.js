@@ -17,7 +17,7 @@ export async function PUT(request) {
     const sanitizedPassword = sanitizeHtml(password);
     const getUser = await User.findOne({
       email: sanitizedEmail,
-      role: userRoles.OEM,
+      role: userRoles.CONTRACTOR,
     }).select("-password");
     if (!getUser) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function PUT(request) {
       );
     }
     const updatedUser = await User.findOneAndUpdate(
-      { email: sanitizedEmail, role: userRoles.OEM },
+      { email: sanitizedEmail, role: userRoles.CONTRACTOR },
       {
         fullName: sanitizedfullName,
         companyName: sanitizedcompanyName,
@@ -44,7 +44,7 @@ export async function PUT(request) {
   } catch (e) {
     return NextResponse.json(
       {
-        message: "Error while updating oem",
+        message: "Error while updating contractor",
       },
       {
         status: 500,

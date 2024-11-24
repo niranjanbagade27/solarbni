@@ -13,8 +13,8 @@ export default function UpdateOem() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [newOemData, setNewOemData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
+    companyName: "",
     email: "",
     password: "",
     gstNumber: "",
@@ -38,8 +38,8 @@ export default function UpdateOem() {
       toast("OEM added successfully");
       setIsLoading(false);
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -51,8 +51,8 @@ export default function UpdateOem() {
       setIsLoading(false);
       toast("Error while adding OEM");
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -75,8 +75,8 @@ export default function UpdateOem() {
       toast("OEM found");
       setIsSearchLoading(false);
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -103,8 +103,8 @@ export default function UpdateOem() {
       toast("Got all OEM");
       setIsSearchLoading(false);
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -121,8 +121,8 @@ export default function UpdateOem() {
     setToEditOem(true);
     setSearchOemEmail("");
     setNewOemData({
-      firstName: user.firstName,
-      lastName: user.lastName,
+      fullName: user.fullName,
+      companyName: user.companyName,
       email: user.email,
       password: user.password,
       gstNumber: user.gstnumber,
@@ -142,8 +142,8 @@ export default function UpdateOem() {
       toast("OEM edited successfully");
       setIsLoading(false);
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -155,8 +155,8 @@ export default function UpdateOem() {
       setIsLoading(false);
       toast("Error while editing OEM");
       setNewOemData({
-        firstName: "",
-        lastName: "",
+        fullName: "",
+        companyName: "",
         email: "",
         password: "",
         gstNumber: "",
@@ -200,17 +200,17 @@ export default function UpdateOem() {
                 <Row>
                   <Col md={4}>
                     <FormGroup>
-                      <Label for="firstName">First Name</Label>
+                      <Label for="fullName">Full Name</Label>
                       <Input
-                        id="firstName"
-                        name="firstName"
-                        placeholder="Enter first name"
+                        id="fullName"
+                        name="fullName"
+                        placeholder="Enter Full Name"
                         type="text"
-                        value={newOemData.firstName}
+                        value={newOemData.fullName}
                         onChange={(e) =>
                           setNewOemData({
                             ...newOemData,
-                            firstName: sanatizeHtml(e.target.value),
+                            fullName: sanatizeHtml(e.target.value),
                           })
                         }
                       />
@@ -218,17 +218,17 @@ export default function UpdateOem() {
                   </Col>
                   <Col md={4}>
                     <FormGroup>
-                      <Label for="lastname">Last Name</Label>
+                      <Label for="companyName">Company Name</Label>
                       <Input
-                        id="lastname"
-                        name="lastName"
-                        placeholder="Enter last name"
+                        id="companyName"
+                        name="companyName"
+                        placeholder="Enter Company Name"
                         type="text"
-                        value={newOemData.lastName}
+                        value={newOemData.companyName}
                         onChange={(e) =>
                           setNewOemData({
                             ...newOemData,
-                            lastName: sanatizeHtml(e.target.value),
+                            companyName: sanatizeHtml(e.target.value),
                           })
                         }
                       />
@@ -369,8 +369,12 @@ export default function UpdateOem() {
             {!isSearchLoading && (
               <>
                 <div
-                  className="flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 cursor-pointer hover:bg-green-300 bg-green-400 w-[30%]"
-                  onClick={() => handleSearchOem()}
+                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-green-400 w-[30%] ${
+                    searchOemEmail === ""
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  onClick={() => searchOemEmail !== "" && handleSearchOem()}
                 >
                   <div className="text-md text-black ">Search OEM</div>
                   <div className="w-[10%] p-1">
@@ -378,14 +382,13 @@ export default function UpdateOem() {
                   </div>
                 </div>
                 <div
-                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 cursor-pointer hover:bg-green-300 bg-yellow-400 w-[30%] ${
-                    searchOemEmail === "" ? "" : "cursor-not-allowed"
+                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${
+                    searchOemEmail === ""
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed"
                   }`}
                   onClick={() => {
-                    if (searchOemEmail !== "") {
-                      return;
-                    }
-                    handleGetAllOem();
+                    searchOemEmail === "" && handleGetAllOem();
                   }}
                 >
                   <div className="text-md text-black ">Get All OEM</div>
@@ -412,8 +415,10 @@ export default function UpdateOem() {
                   >
                     <div className="p-2">
                       <div className="flex flex-row gap-2 text-black font-medium">
-                        <div>{user.firstName}</div>
-                        <div>{user.lastName}</div>
+                        <div>{user.fullName}</div>
+                      </div>
+                      <div className="text-base text-black ml-6">
+                        Company : {user.companyName}
                       </div>
                       <div className="text-base text-black ml-6">
                         Email : {user.email}
@@ -426,10 +431,16 @@ export default function UpdateOem() {
                       </div>
                     </div>
                     <div className="w-[8%] flex flex-row gap-6">
-                      <div onClick={() => handleEditOem(user)} className="cursor-pointer">
+                      <div
+                        onClick={() => handleEditOem(user)}
+                        className="cursor-pointer"
+                      >
                         <img src="/images/edit.svg" alt="edit icon" />
                       </div>
-                      <div onClick={() => handleDeleteOem(user.email)} className="cursor-pointer">
+                      <div
+                        onClick={() => handleDeleteOem(user.email)}
+                        className="cursor-pointer"
+                      >
                         <img src="/images/delete.svg" alt="edit icon" />
                       </div>
                     </div>
