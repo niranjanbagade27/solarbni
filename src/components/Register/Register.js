@@ -12,8 +12,8 @@ export default function LoginComponent() {
   const handleRegister = async () => {
     const response = await axios.post("/api/register", {
       ...loginData,
-      firstName: "Anuj",
-      lastName: "Singh",
+      fullName: "Anuj",
+      companyName: "Singh",
       role: userRoles.ADMIN,
     });
     toast("Register Successful");

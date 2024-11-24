@@ -6,9 +6,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const Navbar = () => {
   const { isVerified, verifyingUser, error } = useVerifyUser();
-  useEffect(() => {
-    console.log(isVerified);
-  }, [isVerified]);
   return (
     <nav className="bg-gray-800 fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -102,7 +99,7 @@ const Navbar = () => {
             {isVerified && (
               <>
                 <span className="text-white italic">
-                  Welcome, {isVerified.firstName} {isVerified.lastName}
+                  Welcome, {isVerified.fullName}
                 </span>
                 <button
                   className="bg-gray-800 text-white px-3 py-2 rounded-md text-sm font-medium"

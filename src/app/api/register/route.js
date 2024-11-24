@@ -6,7 +6,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { email, password, firstName, lastName, role, gstNumber, phone } =
+    const { email, password, fullName, companyName, role, gstNumber, phone } =
       body;
     const getUser = await User.findOne({ email });
     if (getUser) {
@@ -24,8 +24,8 @@ export async function POST(request) {
     const user = new User({
       email,
       password: hashedPassword,
-      firstName,
-      lastName,
+      fullName,
+      companyName,
       role,
       gstnumber: gstNumber,
       phone,
