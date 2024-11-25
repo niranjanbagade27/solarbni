@@ -39,6 +39,9 @@ const userSchema = new Schema({
   gstnumber: {
     type: String,
   },
+  verified: {
+    type: Boolean,
+  }
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

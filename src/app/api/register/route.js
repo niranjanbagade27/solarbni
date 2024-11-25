@@ -7,7 +7,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { email, password, fullName, companyName, role, gstNumber, phone } =
+    const { email, password, fullName, companyName, role, gstNumber, phone} =
       body;
     const getUser = await User.findOne({ email });
     if (getUser) {
@@ -30,6 +30,7 @@ export async function POST(request) {
       role,
       gstnumber: gstNumber,
       phone,
+      verified: false,
     });
     await user.save();
     const { password: savedUserPassword, ...userDetailsWithoutPassword } =
