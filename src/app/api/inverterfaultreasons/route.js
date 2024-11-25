@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import InverterFaultReason from "@/Models/inverterFaultReason";
 import { capitalizeFirstLetter } from "@/util/capitalizeFirstLetter";
 import dbConnect from "@/lib/mongodb";
+export const dynamic = "force-dynamic";
 export async function GET(request) {
   try {
     await dbConnect();

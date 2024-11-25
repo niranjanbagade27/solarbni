@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
-
+export const dynamic = "force-dynamic";
 export async function POST(request) {
   try {
     await dbConnect();

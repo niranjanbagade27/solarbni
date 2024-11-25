@@ -3,7 +3,7 @@ import User from "@/Models/user";
 import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 import { userRoles } from "@/constants/role";
-
+export const dynamic = "force-dynamic";
 export async function POST(request) {
   try {
     const body = await request.json();
