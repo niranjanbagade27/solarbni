@@ -34,7 +34,7 @@ export async function PUT(request) {
       {
         fullName: sanitizedfullName,
         companyName: sanitizedcompanyName,
-        gstNumber: sanitizedGstNumber,
+        gstnumber: sanitizedGstNumber,
         phone: sanitizedPhone,
         ...(sanitizedPassword && { password: sanitizedPassword }),
       },
