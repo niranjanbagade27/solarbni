@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import User from "@/Models/user";
 import bcrypt from "bcrypt";
 import dbConnect from "@/lib/mongodb";
+export const dynamic = "force-dynamic";
 export async function POST(request) {
   try {
     await dbConnect();
