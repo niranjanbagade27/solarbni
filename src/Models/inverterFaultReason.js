@@ -16,6 +16,9 @@ const inverterFaultReasonSchema = new Schema({
     type: String,
     default: "",
   },
+  uniqueDropdownCount: {
+    type: Number,
+  },
   questionChild: {
     type: Array,
     required: true,

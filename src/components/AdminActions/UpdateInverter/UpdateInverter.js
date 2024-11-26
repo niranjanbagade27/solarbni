@@ -21,12 +21,9 @@ export default function UpdateInverter() {
   const [quesPhotoAllowedDefault, setQuesPhotoAllowedDefault] = useState(false);
 
   const [quesChild, setQuesChild] = useState([]);
-  const [quesDropdownLimit, setQuesDropdownLimit] = useState([]);
+  const [quesDropdownLimit, setQuesDropdownLimit] = useState();
   const [quesDropdownText, setDropdownText] = useState("");
-
-  useEffect(() => {
-    console.log("##", quesChild);
-  }, [quesDropdownLimit, quesChild]);
+  const [quesUniqueDropdownCount, setQuesUniqueDropdownCount] = useState([]);
 
   const handleAddQuestion = async () => {
     try {
@@ -44,7 +41,7 @@ export default function UpdateInverter() {
           },
         ];
       } else {
-        quespayload.maxDropdownElements = quesDropdownLimit.length;
+        quespayload.maxDropdownElements = quesDropdownLimit;
         quespayload.srNo = sanatizeHtml(quesSrNo);
         quespayload.question = sanatizeHtml(quesDropdownText);
         quespayload.questionChild = quesChild;
@@ -90,7 +87,7 @@ export default function UpdateInverter() {
                         checked={quesTextAllowedDefault}
                         type="checkbox"
                         onChange={() =>
-                          setQuesTextAllowedDefault(!quesTextAllowed)
+                          setQuesTextAllowedDefault(!quesTextAllowedDefault)
                         }
                       />
                       <Label check className="text-black">
@@ -102,7 +99,7 @@ export default function UpdateInverter() {
                         checked={quesPhotoAllowedDefault}
                         type="checkbox"
                         onChange={() =>
-                          setQuesPhotoAllowedDefault(!quesPhotoAllowed)
+                          setQuesPhotoAllowedDefault(!quesPhotoAllowedDefault)
                         }
                       />
                       <Label check className="text-black">
@@ -136,7 +133,7 @@ export default function UpdateInverter() {
           <div>
             <Form className="w-full text-black">
               <Row>
-                <Col md={6}>
+                <Col md={4}>
                   <FormGroup>
                     <Label for="email">Question Serial Number</Label>
                     <Input
@@ -150,20 +147,22 @@ export default function UpdateInverter() {
                     />
                   </FormGroup>
                 </Col>
-                <Col md={6}>
+                <Col md={4}>
                   <FormGroup>
-                    <Label for="email">Question Dropdown Limit</Label>
+                    <Label for="dropdownUnique">
+                      Dropdown Unique Question Count
+                    </Label>
                     <Input
-                      id="droplimit"
-                      name="droplimit"
-                      placeholder="Enter inverter question dropdown limit"
+                      id="dropdownUnique"
+                      name="dropdownUnique"
+                      placeholder="Enter dropdown unique question count"
                       type="text"
                       onChange={(e) => {
                         if (e.target.value === "") {
-                          setQuesDropdownLimit([]);
+                          setQuesUniqueDropdownCount([]);
                           setQuesChild([]);
                         } else {
-                          setQuesDropdownLimit(
+                          setQuesUniqueDropdownCount(
                             new Array(
                               parseInt(sanatizeHtml(e.target.value))
                             ).fill(0)
@@ -176,6 +175,26 @@ export default function UpdateInverter() {
                               textAllowed: false,
                               photoAllowed: false,
                             })
+                          );
+                        }
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="dropdownLimit">Question Dropdown Limit</Label>
+                    <Input
+                      id="dropdownLimit"
+                      name="dropdownLimit"
+                      placeholder="Enter inverter question dropdown limit"
+                      type="number"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          setQuesDropdownLimit(1);
+                        } else {
+                          setQuesDropdownLimit(
+                            parseInt(sanatizeHtml(e.target.value))
                           );
                         }
                       }}
@@ -199,7 +218,7 @@ export default function UpdateInverter() {
                   </FormGroup>
                 </Col>
               </Row>
-              {quesDropdownLimit.map((ele, index) => (
+              {quesUniqueDropdownCount.map((ele, index) => (
                 <div key={index}>
                   <Row>
                     <Col md={6}>

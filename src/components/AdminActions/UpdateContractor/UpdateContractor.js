@@ -528,7 +528,7 @@ export default function UpdateContractor() {
           </div>
           {!isSearchLoading && (
             <div className="mt-10">
-              <div className="text-2xl text-white">List of CONTRACTORS :</div>
+              <div className="text-2xl text-black">List of CONTRACTORS :</div>
               <div className="mt-6 overflow-y-scroll max-h-[61vh] max-w-[50%]">
                 {searchResult.map((user, index) => (
                   <div
@@ -590,7 +590,7 @@ export default function UpdateContractor() {
                   </div>
                 ))}
                 {searchResult.length === 0 && (
-                  <div className="text-white text-lg">No Result</div>
+                  <div className="text-black text-lg">No Result</div>
                 )}
               </div>
             </div>
