@@ -73,7 +73,7 @@ export default function LoginComponent() {
   };
 
   return (
-    <div className="h-[5vh]">
+    <div className="h-[50%]">
       <Form style={{ width: "100%" }}>
         <Row>
           <Col md={4}>
