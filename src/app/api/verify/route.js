@@ -7,6 +7,7 @@ export async function GET(request) {
   try {
     await dbConnect();
     const token = request.cookies.get("token").value;
+    console.log("token is ", token);
     if (!token) {
       return NextResponse.json(
         {
