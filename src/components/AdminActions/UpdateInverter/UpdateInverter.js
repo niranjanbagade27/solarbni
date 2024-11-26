@@ -1,111 +1,335 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect } from "react";
+import { Form, FormGroup, Label, Input, Row, Col } from "reactstrap";
 import axios from "axios";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import sanatizeHtml from "sanitize-html";
+import { inverterQuestionType } from "@/constants/inverterQuestion";
+import { Button } from "reactstrap";
+import { toast } from "react-toastify";
 
 export default function UpdateInverter() {
-  const [questions, setQuestions] = useState([]);
+  const [questionType, setQuestionType] = useState(
+    inverterQuestionType.DROPDOWN
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [newQuestion, setNewQuestion] = useState("");
-  const fetchQuestions = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get("/api/inverterfaultreasons");
-      setQuestions(response.data.inverterFaultReasons[0].questions);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
-    }
-  };
+  const [quesSrNo, setQuesSrNo] = useState("");
+  const [quesTitleDefault, setQuesTitleDefault] = useState("");
+  const [quesTextAllowedDefault, setQuesTextAllowedDefault] = useState(false);
+  const [quesPhotoAllowedDefault, setQuesPhotoAllowedDefault] = useState(false);
+
+  const [quesChild, setQuesChild] = useState([]);
+  const [quesDropdownLimit, setQuesDropdownLimit] = useState([]);
+  const [quesDropdownText, setDropdownText] = useState("");
+
   useEffect(() => {
-    fetchQuestions();
-  }, []);
+    console.log("##", quesChild);
+  }, [quesDropdownLimit, quesChild]);
 
-  const handleSubmitCategory = async () => {
+  const handleAddQuestion = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post("/api/inverterfaultreasons", {
-        question: sanatizeHtml(newQuestion),
-      });
-      if (response.status === 200) {
-        fetchQuestions();
+      const quespayload = {};
+      if (questionType === inverterQuestionType.DEFAULT) {
+        quespayload.maxDropdownElements = 1;
+        quespayload.srNo = sanatizeHtml(quesSrNo);
+        quespayload.question = "";
+        quespayload.questionChild = [
+          {
+            question: sanatizeHtml(quesTitleDefault),
+            textAllowed: quesTextAllowedDefault,
+            photoAllowed: quesPhotoAllowedDefault,
+          },
+        ];
+      } else {
+        quespayload.maxDropdownElements = quesDropdownLimit.length;
+        quespayload.srNo = sanatizeHtml(quesSrNo);
+        quespayload.question = sanatizeHtml(quesDropdownText);
+        quespayload.questionChild = quesChild;
       }
-    } catch (error) {
+      console.log("quespayload", quespayload);
+      const response = await axios.post("/api/inverterfaultquestions", {
+        ...quespayload,
+      });
+      console.log("response", response);
+      toast("Question Added successfully");
       setIsLoading(false);
-      console.error(error);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
     }
   };
 
-  const handleRemoveCategory = async (question) => {
-    try {
-      if (question === "Others") return;
-      setIsLoading(true);
-      const response = await axios.put("/api/inverterfaultreasons", {
-        question: sanatizeHtml(question),
-      });
-      if (response.status === 200) {
-        fetchQuestions();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
+  const getQuestionTypeForm = (questionType) => {
+    switch (questionType) {
+      case inverterQuestionType.DEFAULT:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter inverter question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup className="h-full flex justify-center items-center gap-5">
+                    <FormGroup check inline>
+                      <Input
+                        checked={quesTextAllowedDefault}
+                        type="checkbox"
+                        onChange={() =>
+                          setQuesTextAllowedDefault(!quesTextAllowed)
+                        }
+                      />
+                      <Label check className="text-black">
+                        Text allowed ?
+                      </Label>
+                    </FormGroup>
+                    <FormGroup check inline>
+                      <Input
+                        checked={quesPhotoAllowedDefault}
+                        type="checkbox"
+                        onChange={() =>
+                          setQuesPhotoAllowedDefault(!quesPhotoAllowed)
+                        }
+                      />
+                      <Label check className="text-black">
+                        Photo Allowed ?
+                      </Label>
+                    </FormGroup>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="question">Question</Label>
+                    <Input
+                      id="question"
+                      name="question"
+                      placeholder="Enter question"
+                      type="textarea"
+                      onChange={(e) =>
+                        setQuesTitleDefault(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        );
+      case inverterQuestionType.DROPDOWN:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter inverter question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Dropdown Limit</Label>
+                    <Input
+                      id="droplimit"
+                      name="droplimit"
+                      placeholder="Enter inverter question dropdown limit"
+                      type="text"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          setQuesDropdownLimit([]);
+                          setQuesChild([]);
+                        } else {
+                          setQuesDropdownLimit(
+                            new Array(
+                              parseInt(sanatizeHtml(e.target.value))
+                            ).fill(0)
+                          );
+                          setQuesChild(
+                            new Array(
+                              parseInt(sanatizeHtml(e.target.value))
+                            ).fill({
+                              question: "",
+                              textAllowed: false,
+                              photoAllowed: false,
+                            })
+                          );
+                        }
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="question">Dropdown text</Label>
+                    <Input
+                      id="dropquestion"
+                      name="dropquestion"
+                      placeholder="Enter dropdown text"
+                      type="text"
+                      onChange={(e) =>
+                        setDropdownText(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              {quesDropdownLimit.map((ele, index) => (
+                <div key={index}>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="email">
+                          Question Dropdown Text {index + 1}
+                        </Label>
+                        <Input
+                          id="srno"
+                          name="srno"
+                          placeholder="Enter inverter dropdown question"
+                          type="text"
+                          onChange={(e) => {
+                            let newQuesChild = [...quesChild];
+                            newQuesChild[index] = {
+                              ...newQuesChild[index],
+                              question: sanatizeHtml(e.target.value),
+                            };
+                            setQuesChild(newQuesChild);
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup className="h-full flex justify-center items-center gap-5">
+                        <FormGroup check inline>
+                          <Input
+                            checked={quesChild[index].textAllowed}
+                            type="checkbox"
+                            onChange={() => {
+                              let newQuesChild = [...quesChild];
+                              newQuesChild[index] = {
+                                ...newQuesChild[index],
+                                textAllowed: !quesChild[index].textAllowed,
+                              };
+                              setQuesChild(newQuesChild);
+                            }}
+                          />
+                          <Label check className="text-black">
+                            Text allowed ?
+                          </Label>
+                        </FormGroup>
+                        <FormGroup check inline>
+                          <Input
+                            checked={quesChild[index].photoAllowed}
+                            type="checkbox"
+                            onChange={() => {
+                              let newQuesChild = [...quesChild];
+                              newQuesChild[index] = {
+                                ...newQuesChild[index],
+                                photoAllowed: !quesChild[index].photoAllowed,
+                              };
+                              setQuesChild(newQuesChild);
+                            }}
+                          />
+                          <Label check className="text-black">
+                            Photo Allowed ?
+                          </Label>
+                        </FormGroup>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+            </Form>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="h-full">
-      {isLoading && (
-        <div className="flex justify-center items-center h-full">
-          <BounceLoader color={spinnerColor} />
+    <div className="mt-4">
+      <div className="flex flex-col">
+        <div className="flex flex-row items-center">
+          <div className="grid grid-flow-row grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
+            <div>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 rounded-lg w-full h-[5vh] text-black text-xl`}
+              >
+                Question Type :
+              </span>
+            </div>
+            <div onClick={() => setQuestionType(inverterQuestionType.DEFAULT)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                  questionType === inverterQuestionType.DEFAULT
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                } w-full h-[5vh]`}
+              >
+                {inverterQuestionType.DEFAULT}
+              </span>
+            </div>
+            <div onClick={() => setQuestionType(inverterQuestionType.DROPDOWN)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                  questionType === inverterQuestionType.DROPDOWN
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                } w-full h-[5vh]`}
+              >
+                {inverterQuestionType.DROPDOWN}
+              </span>
+            </div>
+          </div>
         </div>
-      )}
-      {!isLoading && (
-        <>
-          <div className="flex flex-row justify-center items-center gap-2">
-            <div className="w-[70%]">
-              <input
-                type="text"
-                id="panelCategory"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Enter new category"
-                onChange={(e) => setNewQuestion(e.target.value)}
-              />
-            </div>
-            <div
-              className="flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 cursor-pointer hover:bg-green-300 bg-green-400 w-[30%]"
-              onClick={() => handleSubmitCategory()}
-            >
-              <div className="text-md text-black ">Add new category</div>
-              <div className="w-[10%] p-1 mt-1">
-                <img src="/images/add.svg" alt="add icon" />
-              </div>
-            </div>
+        <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full min-h-[80vh]">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 h-[5%]">
+            {questionType} Question Type
+          </h3>
+          <div>{getQuestionTypeForm(questionType)}</div>
+          <div>
+            {!isLoading && (
+              <Button
+                color="primary"
+                className="mt-4"
+                onClick={() => handleAddQuestion()}
+              >
+                Add Question
+              </Button>
+            )}
+            {isLoading && <BounceLoader color={spinnerColor} />}
           </div>
-          <div className="mt-10">
-            <div className="text-2xl text-black">Already added questions :</div>
-            <div className="mt-6 overflow-y-scroll max-h-[61vh]">
-              {questions.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row justify-between items-center gap-2 p-2 rounded-lg border-2 border-gray-300 mt-2 cursor-pointer hover:bg-gray-200 h-16"
-                  onClick={() => handleRemoveCategory(category)}
-                >
-                  <div className="text-lg text-black pl-4">{category}</div>
-                  {category !== "Others" && (
-                    <div className="w-[4%] p-1 mt-1">
-                      <img src="/images/delete.svg" alt="delete icon" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
