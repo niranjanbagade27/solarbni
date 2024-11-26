@@ -171,7 +171,7 @@ export default function UpdateContractor() {
 
   const handleResetPassword = async (currEmail) => {
     try {
-      console.log("searching pwd for ",currEmail);
+      console.log("searching pwd for ", currEmail);
       setIsSearchLoading(true);
       setToEditContractor(false);
       const response = await axios.post(
@@ -179,7 +179,7 @@ export default function UpdateContractor() {
         { email: currEmail }
       );
       console.log(response);
-      toast("New password is: "+response.data.plainPassword);
+      toast("New password is: " + response.data.plainPassword);
       setIsSearchLoading(false);
       setNewContractorData({
         fullName: "",
@@ -196,7 +196,7 @@ export default function UpdateContractor() {
       setSearchResult([]);
       toast("Error while searching CONTRACTOR");
     }
-  }
+  };
 
   const handleEditContractor = (user) => {
     setToEditContractor(true);
@@ -467,10 +467,11 @@ export default function UpdateContractor() {
             {!isSearchLoading && (
               <>
                 <div
-                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-green-400 w-[30%] ${searchContractorEmail === ""
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
-                    }`}
+                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-green-400 w-[30%] ${
+                    searchContractorEmail === ""
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
                   onClick={() =>
                     searchContractorEmail !== "" && handleSearchContractor()
                   }
@@ -491,29 +492,35 @@ export default function UpdateContractor() {
           </div>
           <div className="flex flex-row justify-left mt-6 gap-2">
             <div
-              className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${searchContractorEmail === ""
-                ? "cursor-pointer"
-                : "cursor-not-allowed"
-                }`}
+              className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${
+                searchContractorEmail === ""
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed"
+              }`}
               onClick={() => {
                 searchContractorEmail === "" && handleVerifiedContractors();
               }}
             >
-              <div className="text-md text-black ">Get Verified CONTRACTORS</div>
+              <div className="text-md text-black ">
+                Get Verified CONTRACTORS
+              </div>
               <div className="w-[10%] p-1">
                 <img src="/images/search.svg" alt="add icon" />
               </div>
             </div>
             <div
-              className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${searchContractorEmail === ""
-                ? "cursor-pointer"
-                : "cursor-not-allowed"
-                }`}
+              className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${
+                searchContractorEmail === ""
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed"
+              }`}
               onClick={() => {
                 searchContractorEmail === "" && handleUnverifiedContractors();
               }}
             >
-              <div className="text-md text-black ">Get Unverified CONTRACTORS</div>
+              <div className="text-md text-black ">
+                Get Unverified CONTRACTORS
+              </div>
               <div className="w-[10%] p-1">
                 <img src="/images/search.svg" alt="add icon" />
               </div>
@@ -551,8 +558,12 @@ export default function UpdateContractor() {
                         onClick={() => handleVerifyContractor(user.email)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
                       >
-                        {user.verified && (<img src="/images/verify.svg" alt="verify icon" />)}
-                        {!user.verified && (<img src="/images/block.svg" alt="block icon" />)}
+                        {!user.verified && (
+                          <img src="/images/verify.svg" alt="verify icon" />
+                        )}
+                        {user.verified && (
+                          <img src="/images/block.svg" alt="block icon" />
+                        )}
                       </div>
                       {/* <div
                         onClick={() => handleEditContractor(user)}
@@ -564,7 +575,10 @@ export default function UpdateContractor() {
                         onClick={() => handleResetPassword(user.email)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
                       >
-                        <img src="/images/reset-password.svg" alt="delete icon" />
+                        <img
+                          src="/images/reset-password.svg"
+                          alt="delete icon"
+                        />
                       </div>
                       <div
                         onClick={() => handleDeleteContractor(user.email)}
