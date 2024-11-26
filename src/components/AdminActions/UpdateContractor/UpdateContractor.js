@@ -126,7 +126,7 @@ export default function UpdateContractor() {
       );
       console.log(response);
       setSearchResult(response.data.users);
-      toast("Got all CONTRACTOR");
+      toast("Got Verified CONTRACTOR");
       setIsSearchLoading(false);
       setNewContractorData({
         fullName: "",
@@ -139,7 +139,7 @@ export default function UpdateContractor() {
       });
     } catch (e) {
       setIsSearchLoading(false);
-      toast("Error while getting all CONTRACTOR");
+      toast("Error while getting verified CONTRACTOR");
     }
   };
 
@@ -168,6 +168,35 @@ export default function UpdateContractor() {
       toast("Error while getting all CONTRACTOR");
     }
   };
+
+  const handleResetPassword = async (currEmail) => {
+    try {
+      console.log("searching pwd for ",currEmail);
+      setIsSearchLoading(true);
+      setToEditContractor(false);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/contractor/resetpassword`,
+        { email: currEmail }
+      );
+      console.log(response);
+      toast("New password is: "+response.data.plainPassword);
+      setIsSearchLoading(false);
+      setNewContractorData({
+        fullName: "",
+        companyName: "",
+        email: "",
+        password: "",
+        gstNumber: "",
+        phone: "",
+        role: userRoles.CONTRACTOR,
+      });
+      setSearchResult([response.data.user]);
+    } catch (e) {
+      setIsSearchLoading(false);
+      setSearchResult([]);
+      toast("Error while searching CONTRACTOR");
+    }
+  }
 
   const handleEditContractor = (user) => {
     setToEditContractor(true);
@@ -525,11 +554,17 @@ export default function UpdateContractor() {
                         {user.verified && (<img src="/images/verify.svg" alt="verify icon" />)}
                         {!user.verified && (<img src="/images/block.svg" alt="block icon" />)}
                       </div>
-                      <div
+                      {/* <div
                         onClick={() => handleEditContractor(user)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
                       >
                         <img src="/images/edit.svg" alt="edit icon" />
+                      </div> */}
+                      <div
+                        onClick={() => handleResetPassword(user.email)}
+                        className="cursor-pointer max-h-[20px] max-w-[20px]"
+                      >
+                        <img src="/images/reset-password.svg" alt="delete icon" />
                       </div>
                       <div
                         onClick={() => handleDeleteContractor(user.email)}
