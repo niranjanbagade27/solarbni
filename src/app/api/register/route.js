@@ -7,6 +7,7 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
+    console.log("Register body ",body);
     const { email, password, fullName, companyName, role, gstNumber, phone} =
       body;
     const getUser = await User.findOne({ email });

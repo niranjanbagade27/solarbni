@@ -37,7 +37,7 @@ export default function LoginComponent() {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      setSearchContractorEmail("");
+      console.log("saving info ",newContractorData);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/register`,
         newContractorData
@@ -57,6 +57,7 @@ export default function LoginComponent() {
       setConfirmPassword("");
     } catch (e) {
       setIsLoading(false);
+      console.log(e);
       toast("Error while adding CONTRACTOR");
       setNewContractorData({
         fullName: "",
