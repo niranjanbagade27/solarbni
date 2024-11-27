@@ -71,3 +71,66 @@ export async function GET() {
     );
   }
 }
+
+export async function PUT(request) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    const { srNo } = body;
+    const getQuestionWithSrNo = await InverterFaultReason.findOne({
+      srNo: srNo,
+    });
+    if (!getQuestionWithSrNo) {
+      return NextResponse.json(
+        {
+          message: "Question with serial number does not exist",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+    await InverterFaultReason.findOneAndDelete({ srNo: srNo });
+    return NextResponse.json(
+      {
+        message: "Question deleted successfully",
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (e) {
+    return NextResponse.json(
+      {
+        message: "Error while updating question",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    await dbConnect();
+    await InverterFaultReason.deleteMany({});
+    return NextResponse.json(
+      {
+        message: "All Question deleted successfully",
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (e) {
+    return NextResponse.json(
+      {
+        message: "Error while deleting all question",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
