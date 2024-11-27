@@ -1,18 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect } from "react";
-import { Form, FormGroup, Label, Input, Row, Col } from "reactstrap";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "reactstrap";
 import axios from "axios";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import sanatizeHtml from "sanitize-html";
 import { inverterQuestionType } from "@/constants/inverterQuestion";
-import { Button } from "reactstrap";
 import { toast } from "react-toastify";
 
 export default function UpdateInverter() {
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
   const [questionType, setQuestionType] = useState(
-    inverterQuestionType.DROPDOWN
+    inverterQuestionType.DEFAULT
   );
   const [isLoading, setIsLoading] = useState(false);
   const [quesSrNo, setQuesSrNo] = useState("");
@@ -286,8 +299,59 @@ export default function UpdateInverter() {
             </Form>
           </div>
         );
+      case inverterQuestionType.DELETE:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter inverter question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        );
       default:
         return null;
+    }
+  };
+
+  const handleDeleteSingleQuestion = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.put("/api/inverterfaultquestions", {
+        srNo: quesSrNo,
+      });
+      console.log("response", response);
+      toast("Question Deleted successfully");
+      setIsLoading(false);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAllQuestions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete("/api/inverterfaultquestions");
+      console.log("response", response);
+      toast("All Questions Deleted successfully");
+      setIsLoading(false);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
     }
   };
 
@@ -328,24 +392,79 @@ export default function UpdateInverter() {
                 {inverterQuestionType.DROPDOWN}
               </span>
             </div>
+            <div onClick={() => setQuestionType(inverterQuestionType.DELETE)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg text-white bg-red-600 dark:bg-red-600 w-full h-[5vh]`}
+              >
+                DELETE QUESTIONS
+              </span>
+            </div>
           </div>
         </div>
         <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full min-h-[80vh]">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 h-[5%]">
-            {questionType} Question Type
+            {questionType}{" "}
+            {questionType === inverterQuestionType.DELETE
+              ? ""
+              : "Question Type"}
           </h3>
           <div>{getQuestionTypeForm(questionType)}</div>
           <div>
             {!isLoading && (
-              <Button
-                color="primary"
-                className="mt-4"
-                onClick={() => handleAddQuestion()}
-              >
-                Add Question
-              </Button>
+              <>
+                {questionType !== inverterQuestionType.DELETE && (
+                  <Button
+                    color="primary"
+                    className="mt-4"
+                    onClick={() => handleAddQuestion()}
+                  >
+                    Add Question
+                  </Button>
+                )}
+                {questionType === inverterQuestionType.DELETE && (
+                  <div className="flex gap-5">
+                    <Button
+                      color="danger"
+                      className="mt-4"
+                      onClick={() => handleDeleteSingleQuestion()}
+                    >
+                      Delete Questions
+                    </Button>
+                    <Button
+                      color="danger"
+                      className="mt-4"
+                      onClick={() => toggle()}
+                    >
+                      Delete All Questions
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
             {isLoading && <BounceLoader color={spinnerColor} />}
+            <Modal isOpen={modal} toggle={toggle}>
+              <ModalHeader toggle={toggle}>
+                Delete All Inverter Questions ?
+              </ModalHeader>
+              <ModalBody>
+                Are you sure to delete all inverter questions ?
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  onClick={() => {
+                    handleDeleteAllQuestions();
+                    toggle();
+                  }}
+                >
+                  Yes, Delete
+                </Button>{" "}
+                <Button color="secondary" onClick={toggle}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Modal>
           </div>
         </div>
       </div>
