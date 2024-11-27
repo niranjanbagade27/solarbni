@@ -407,6 +407,7 @@ export default function UpdateOem() {
                 {!isLoading && (
                   <Button
                     color="primary"
+                    disabled={Object.values(errors).some((error) => error !== '') || newOemData.password !== confirmPassword}
                     onClick={() => {
                       if (toEditOem) {
                         handleSubmitEditOem();
