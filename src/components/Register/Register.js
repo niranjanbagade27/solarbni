@@ -37,7 +37,7 @@ export default function LoginComponent() {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      console.log("saving info ",newContractorData);
+      console.log("saving info ", newContractorData);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/register`,
         newContractorData
@@ -230,21 +230,21 @@ export default function LoginComponent() {
                 placeholder="Enter password"
                 type="password"
                 invalid={!!errors.passwordError}
-                onChange={(e) =>
-                  {setNewContractorData({
+                onChange={(e) => {
+                  setNewContractorData({
                     ...newContractorData,
                     password: sanatizeHtml(e.target.value),
                   })
-                
-                  if(e.target.value.length<6){
+
+                  if (e.target.value.length < 6) {
                     setErrors({ ...errors, passwordError: 'Minimum password length should be 6' })
-                  }else{
+                  } else {
                     setErrors({ ...errors, passwordError: '' })
                   }
                 }
                 }
               />
-                            {errors.passwordError && <FormFeedback>{errors.passwordError}</FormFeedback>}
+              {errors.passwordError && <FormFeedback>{errors.passwordError}</FormFeedback>}
 
             </FormGroup>
           </Col>
@@ -280,7 +280,7 @@ export default function LoginComponent() {
             color="primary"
             disabled={Object.values(errors).some((error) => error !== '')}
             onClick={() => {
-                handleSubmit();
+              handleSubmit();
             }}
           >
             Register
