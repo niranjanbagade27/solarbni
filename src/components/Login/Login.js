@@ -12,16 +12,25 @@ export default function LoginComponent() {
     password: "",
   });
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/login`,
-      loginData
-    );
-    toast("Login Successful");
-    setIsLoading(false);
-    setTimeout(() => {
-      window.location.href = "/profile";
-    }, 2000);
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/login`,
+        loginData
+      );
+      toast("Login Successful");
+      setIsLoading(false);
+      setTimeout(() => {
+        window.location.href = "/profile";
+      }, 2000);
+    } catch (error) {
+      // Handle errors here
+      console.error("Login Error:", error); // Example: log the error to console
+      setIsLoading(false); // Assuming you want to stop loading animation on error
+      toast("Login Failed: " + error.response.data.message); // Example: display error message
+    } finally {
+      // Code to always run (optional)
+    }
   };
   return (
     <Form style={{ width: "100%" }}>

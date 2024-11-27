@@ -5,7 +5,7 @@ import axios from "axios";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import sanatizeHtml from "sanitize-html";
-import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button, Row, Col, FormFeedback } from "reactstrap";
 import { userRoles } from "@/constants/role";
 import { toast } from "react-toastify";
 
@@ -25,7 +25,14 @@ export default function UpdateOem() {
   const [searchOemEmail, setSearchOemEmail] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [toEditOem, setToEditOem] = useState(false);
-
+  const [errors, setErrors] = useState({
+    fullNameError: '',
+    emailError: '',
+    gstError: '',
+    phoneNumberError: '',
+    companyNameError: '',
+    passwordError: ''
+  });
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
@@ -206,14 +213,22 @@ export default function UpdateOem() {
                         name="fullName"
                         placeholder="Enter Full Name"
                         type="text"
+                        invalid={!!errors.fullNameError}
                         value={newOemData.fullName}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             fullName: sanatizeHtml(e.target.value),
                           })
-                        }
+                          if (e.target.value.length < 5 || e.target.value.length > 50) {
+                            setErrors({ ...errors, fullNameError: 'Full name length must be between 5 to 50' })
+                          } else {
+                            setErrors({ ...errors, fullNameError: '' })
+                          }
+                        }}
                       />
+                      {errors.fullNameError && <FormFeedback>{errors.fullNameError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={4}>
@@ -224,14 +239,22 @@ export default function UpdateOem() {
                         name="companyName"
                         placeholder="Enter Company Name"
                         type="text"
+                        invalid={!!errors.companyNameError}
                         value={newOemData.companyName}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             companyName: sanatizeHtml(e.target.value),
                           })
-                        }
+                          if (e.target.value.length < 5 || e.target.value.length > 50) {
+                            setErrors({ ...errors, companyNameError: 'Company name length must be between 5 to 50' })
+                          } else {
+                            setErrors({ ...errors, companyNameError: '' })
+                          }
+                        }}
                       />
+                      {errors.companyNameError && <FormFeedback>{errors.companyNameError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={4}>
@@ -243,13 +266,22 @@ export default function UpdateOem() {
                         value={newOemData.phone}
                         placeholder="Enter phone number"
                         type="text"
-                        onChange={(e) =>
+                        invalid={!!errors.phoneNumberError}
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             phone: sanatizeHtml(e.target.value),
                           })
-                        }
+                          const phoneRegex = /^[0-9]{10}$/;
+                          const test = phoneRegex.test(e.target.value);
+                          if (!test) {
+                            setErrors({ ...errors, phoneNumberError: 'Phone number length should be 10' })
+                          } else {
+                            setErrors({ ...errors, phoneNumberError: '' })
+                          }
+                        }}
                       />
+                      {errors.phoneNumberError && <FormFeedback>{errors.phoneNumberError}</FormFeedback>}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -263,13 +295,24 @@ export default function UpdateOem() {
                         name="email"
                         placeholder="Enter email"
                         type="email"
-                        onChange={(e) =>
+                        invalid={!!errors.emailError}
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             email: sanatizeHtml(e.target.value),
                           })
+                          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                          const test = emailRegex.test(e.target.value);
+                          if (!test) {
+                            setErrors({ ...errors, emailError: 'Invalid Email' })
+                          } else {
+                            setErrors({ ...errors, emailError: '' })
+                          }
+                        }
                         }
                       />
+                      {errors.emailError && <FormFeedback>{errors.emailError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -280,14 +323,30 @@ export default function UpdateOem() {
                         name="gst"
                         placeholder="Enter GST number"
                         type="text"
+                        invalid={!!errors.gstError}
+
                         value={newOemData.gstNumber}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             gstNumber: sanatizeHtml(e.target.value),
                           })
+                          const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}$/;
+                          const test = gstRegex.test(e.target.value);
+                          if (!test) {
+                            if (e.target.value.length > 0) {
+                              setErrors({ ...errors, gstError: 'Invalid GST number' })
+                            } else {
+                              setErrors({ ...errors, gstError: '' })
+                            }
+                          } else {
+                            setErrors({ ...errors, gstError: '' })
+                          }
+                        }
                         }
                       />
+                      {errors.gstError && <FormFeedback>{errors.gstError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                 </Row>
@@ -300,13 +359,22 @@ export default function UpdateOem() {
                         name="password"
                         placeholder="Enter password"
                         type="password"
-                        onChange={(e) =>
+                        invalid={!!errors.passwordError}
+                        onChange={(e) => {
                           setNewOemData({
                             ...newOemData,
                             password: sanatizeHtml(e.target.value),
                           })
+                          if (e.target.value.length < 6) {
+                            setErrors({ ...errors, passwordError: 'Minimum password length should be 6' })
+                          } else {
+                            setErrors({ ...errors, passwordError: '' })
+                          }
+                        }
                         }
                       />
+                      {errors.passwordError && <FormFeedback>{errors.passwordError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -369,11 +437,10 @@ export default function UpdateOem() {
             {!isSearchLoading && (
               <>
                 <div
-                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-green-400 w-[30%] ${
-                    searchOemEmail === ""
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
+                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-green-400 w-[30%] ${searchOemEmail === ""
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                    }`}
                   onClick={() => searchOemEmail !== "" && handleSearchOem()}
                 >
                   <div className="text-md text-black ">Search OEM</div>
@@ -382,11 +449,10 @@ export default function UpdateOem() {
                   </div>
                 </div>
                 <div
-                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${
-                    searchOemEmail === ""
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed"
-                  }`}
+                  className={`flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 hover:bg-green-300 bg-yellow-400 w-[30%] ${searchOemEmail === ""
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed"
+                    }`}
                   onClick={() => {
                     searchOemEmail === "" && handleGetAllOem();
                   }}
