@@ -278,7 +278,7 @@ export default function LoginComponent() {
         {!isLoading && (
           <Button
             color="primary"
-            disabled={Object.values(errors).some((error) => error !== '')}
+            disabled={Object.values(errors).some((error) => error !== '') || newContractorData.password !== confirmPassword}
             onClick={() => {
               handleSubmit();
             }}

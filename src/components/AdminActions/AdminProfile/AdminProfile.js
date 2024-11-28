@@ -97,7 +97,7 @@ export default function AdminProfilePage({ loggedInUser }) {
           </Row>
           {!isLoading && (
             <Button color="primary" 
-            disabled={Object.values(errors).some((error) => error !== '')}
+            disabled={Object.values(errors).some((error) => error !== '') || resetPasswordData.password !== resetPasswordData.confirmPassword}
             onClick={() => handleSubmit()}>
               Reset
             </Button>
