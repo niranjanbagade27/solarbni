@@ -353,7 +353,7 @@ export default function UpdateOem() {
                 <Row>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="password">Password</Label>
+                      <Label for="password">Password (Fill only if you wish to reset the password)</Label>
                       <Input
                         id="password"
                         name="password"
@@ -379,7 +379,7 @@ export default function UpdateOem() {
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="confirmPassword">Confirm Password</Label>
+                      <Label for="confirmPassword">Confirm Password (Fill only if you wish to reset the password)</Label>
                       <Input
                         id="confirmPassword"
                         name="password"
@@ -407,7 +407,7 @@ export default function UpdateOem() {
                 {!isLoading && (
                   <Button
                     color="primary"
-                    disabled={Object.values(errors).some((error) => error !== '') || newOemData.password !== confirmPassword}
+                    disabled={Object.values(errors).some((error) => error !== '') || (newOemData.password &&  confirmPassword && newOemData.password !== confirmPassword)}
                     onClick={() => {
                       if (toEditOem) {
                         handleSubmitEditOem();

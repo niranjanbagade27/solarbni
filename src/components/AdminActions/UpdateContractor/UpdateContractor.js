@@ -5,7 +5,7 @@ import axios from "axios";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import sanatizeHtml from "sanitize-html";
-import { Form, FormGroup, Label, Input, Button, Row, Col } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button, Row, Col, FormFeedback } from "reactstrap";
 import { userRoles } from "@/constants/role";
 import { toast } from "react-toastify";
 
@@ -20,6 +20,14 @@ export default function UpdateContractor() {
     gstNumber: "",
     phone: "",
     role: userRoles.CONTRACTOR,
+  });
+  const [errors, setErrors] = useState({
+    fullNameError: '',
+    emailError: '',
+    gstError: '',
+    phoneNumberError: '',
+    companyNameError: '',
+    passwordError: ''
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [searchContractorEmail, setSearchContractorEmail] = useState("");
@@ -293,7 +301,7 @@ export default function UpdateContractor() {
         <>
           <div className="flex gap-3 flex-col">
             {/* <div className="font-bold text-xl text-black">Add new CONTRACTOR : </div> */}
-            {/* <div>
+            <div>
               <Form style={{ width: "100%" }}>
                 <Row>
                   <Col md={4}>
@@ -304,14 +312,23 @@ export default function UpdateContractor() {
                         name="fullName"
                         placeholder="Enter Full Name"
                         type="text"
+                        invalid={!!errors.fullNameError}
                         value={newContractorData.fullName}
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             fullName: sanatizeHtml(e.target.value),
                           })
+                          if (e.target.value.length < 5 || e.target.value.length > 50) {
+                            setErrors({ ...errors, fullNameError: 'Full name length must be between 5 to 50' })
+                          } else {
+                            setErrors({ ...errors, fullNameError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.fullNameError && <FormFeedback>{errors.fullNameError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={4}>
@@ -322,14 +339,23 @@ export default function UpdateContractor() {
                         name="companyName"
                         placeholder="Enter Company Name"
                         type="text"
+                        invalid={!!errors.companyNameError}
                         value={newContractorData.companyName}
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             companyName: sanatizeHtml(e.target.value),
                           })
+                          if (e.target.value.length < 5 || e.target.value.length > 50) {
+                            setErrors({ ...errors, companyNameError: 'Company name length must be between 5 to 50' })
+                          } else {
+                            setErrors({ ...errors, companyNameError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.companyNameError && <FormFeedback>{errors.companyNameError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={4}>
@@ -341,13 +367,24 @@ export default function UpdateContractor() {
                         value={newContractorData.phone}
                         placeholder="Enter phone number"
                         type="text"
+                        invalid={!!errors.phoneNumberError}
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             phone: sanatizeHtml(e.target.value),
                           })
+                          const phoneRegex = /^[0-9]{10}$/;
+                          const test = phoneRegex.test(e.target.value);
+                          if (!test) {
+                            setErrors({ ...errors, phoneNumberError: 'Phone number length should be 10' })
+                          } else {
+                            setErrors({ ...errors, phoneNumberError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.phoneNumberError && <FormFeedback>{errors.phoneNumberError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                 </Row>
@@ -361,13 +398,25 @@ export default function UpdateContractor() {
                         name="email"
                         placeholder="Enter email"
                         type="email"
+                        invalid={!!errors.emailError}
+
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             email: sanatizeHtml(e.target.value),
                           })
+                          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                          const test = emailRegex.test(e.target.value);
+                          if (!test) {
+                            setErrors({ ...errors, emailError: 'Invalid Email' })
+                          } else {
+                            setErrors({ ...errors, emailError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.emailError && <FormFeedback>{errors.emailError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -378,38 +427,62 @@ export default function UpdateContractor() {
                         name="gst"
                         placeholder="Enter GST number"
                         type="text"
+                        invalid={!!errors.gstError}
                         value={newContractorData.gstNumber}
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             gstNumber: sanatizeHtml(e.target.value),
                           })
+                          const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}$/;
+                          const test = gstRegex.test(e.target.value);
+                          if (!test) {
+                            if (e.target.value.length > 0) {
+                              setErrors({ ...errors, gstError: 'Invalid GST number' })
+                            } else {
+                              setErrors({ ...errors, gstError: '' })
+                            }
+                          } else {
+                            setErrors({ ...errors, gstError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.gstError && <FormFeedback>{errors.gstError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="password">Password</Label>
+                      <Label for="password">Password (Fill only if you wish to reset the password)</Label>
                       <Input
                         id="password"
                         name="password"
                         placeholder="Enter password"
                         type="password"
+                        invalid={!!errors.passwordError}
                         onChange={(e) =>
-                          setNewContractorData({
+                          {setNewContractorData({
                             ...newContractorData,
                             password: sanatizeHtml(e.target.value),
                           })
+                          if (e.target.value.length < 6) {
+                            setErrors({ ...errors, passwordError: 'Minimum password length should be 6' })
+                          } else {
+                            setErrors({ ...errors, passwordError: '' })
+                          }
+                        }
                         }
                       />
+                                            {errors.passwordError && <FormFeedback>{errors.passwordError}</FormFeedback>}
+
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label for="confirmPassword">Confirm Password</Label>
+                      <Label for="confirmPassword">Confirm Password (Fill only if you wish to reset the password)</Label>
                       <Input
                         id="confirmPassword"
                         name="password"
@@ -437,6 +510,7 @@ export default function UpdateContractor() {
                 {!isLoading && (
                   <Button
                     color="primary"
+                    disabled={Object.values(errors).some((error) => error !== '') || (newContractorData.password &&  confirmPassword && newContractorData.password !== confirmPassword)}
                     onClick={() => {
                       if (toEditContractor) {
                         handleSubmitEditContractor();
@@ -450,7 +524,7 @@ export default function UpdateContractor() {
                 )}
                 {isLoading && <BounceLoader color={spinnerColor} />}
               </Form>
-            </div> */}
+            </div>
           </div>
           <div className="flex flex-row justify-left items-center gap-2 mt-8">
             <div className="w-[50%]">
@@ -565,13 +639,13 @@ export default function UpdateContractor() {
                           <img src="/images/block.svg" alt="block icon" />
                         )}
                       </div>
-                      {/* <div
+                      <div
                         onClick={() => handleEditContractor(user)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
                       >
                         <img src="/images/edit.svg" alt="edit icon" />
-                      </div> */}
-                      <div
+                      </div>
+                      {/* <div
                         onClick={() => handleResetPassword(user.email)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
                       >
@@ -579,7 +653,7 @@ export default function UpdateContractor() {
                           src="/images/reset-password.svg"
                           alt="delete icon"
                         />
-                      </div>
+                      </div> */}
                       <div
                         onClick={() => handleDeleteContractor(user.email)}
                         className="cursor-pointer max-h-[20px] max-w-[20px]"
