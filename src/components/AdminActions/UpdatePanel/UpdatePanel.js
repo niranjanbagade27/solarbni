@@ -1,113 +1,473 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect } from "react";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "reactstrap";
 import axios from "axios";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import sanatizeHtml from "sanitize-html";
+import { panelQuestionType } from "@/constants/panelQuestion";
+import { toast } from "react-toastify";
 
 export default function UpdatePanel() {
-  const [categories, setCategories] = useState([]);
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
+  const [questionType, setQuestionType] = useState(
+    panelQuestionType.DEFAULT
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
-  const fetchCategories = async () => {
+  const [quesSrNo, setQuesSrNo] = useState("");
+  const [quesTitleDefault, setQuesTitleDefault] = useState("");
+  const [quesTextAllowedDefault, setQuesTextAllowedDefault] = useState(false);
+  const [quesPhotoAllowedDefault, setQuesPhotoAllowedDefault] = useState(false);
+
+  const [quesChild, setQuesChild] = useState([]);
+  const [quesDropdownLimit, setQuesDropdownLimit] = useState();
+  const [quesDropdownText, setDropdownText] = useState("");
+  const [quesUniqueDropdownCount, setQuesUniqueDropdownCount] = useState([]);
+
+  const handleAddQuestion = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("/api/panelfaultreasons");
-      setCategories(response.data.panelFaultReasons[0].reasons);
+      const quespayload = {};
+      if (questionType === panelQuestionType.DEFAULT) {
+        quespayload.maxDropdownElements = 1;
+        quespayload.srNo = sanatizeHtml(quesSrNo);
+        quespayload.question = "";
+        quespayload.questionChild = [
+          {
+            question: sanatizeHtml(quesTitleDefault),
+            textAllowed: quesTextAllowedDefault,
+            photoAllowed: quesPhotoAllowedDefault,
+          },
+        ];
+      } else {
+        quespayload.maxDropdownElements = quesDropdownLimit;
+        quespayload.srNo = sanatizeHtml(quesSrNo);
+        quespayload.question = sanatizeHtml(quesDropdownText);
+        quespayload.questionChild = quesChild;
+      }
+      console.log("quespayload", quespayload);
+      const response = await axios.post("/api/panelfaultquestions", {
+        ...quespayload,
+      });
+      console.log("response", response);
+      toast("Question Added successfully");
       setIsLoading(false);
-    } catch (error) {
+    } catch (e) {
+      toast(e.response.data.message);
       setIsLoading(false);
-      console.error(error);
     }
   };
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
-  const handleSubmitCategory = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.post("/api/panelfaultreasons", {
-        category: sanatizeHtml(newCategory),
-      });
-      if (response.status === 200) {
-        fetchCategories();
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
+  const getQuestionTypeForm = (questionType) => {
+    switch (questionType) {
+      case panelQuestionType.DEFAULT:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter panel question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup className="h-full flex justify-center items-center gap-5">
+                    <FormGroup check inline>
+                      <Input
+                        checked={quesTextAllowedDefault}
+                        type="checkbox"
+                        onChange={() =>
+                          setQuesTextAllowedDefault(!quesTextAllowedDefault)
+                        }
+                      />
+                      <Label check className="text-black">
+                        Text allowed ?
+                      </Label>
+                    </FormGroup>
+                    <FormGroup check inline>
+                      <Input
+                        checked={quesPhotoAllowedDefault}
+                        type="checkbox"
+                        onChange={() =>
+                          setQuesPhotoAllowedDefault(!quesPhotoAllowedDefault)
+                        }
+                      />
+                      <Label check className="text-black">
+                        Photo Allowed ?
+                      </Label>
+                    </FormGroup>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="question">Question</Label>
+                    <Input
+                      id="question"
+                      name="question"
+                      placeholder="Enter question"
+                      type="textarea"
+                      onChange={(e) =>
+                        setQuesTitleDefault(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        );
+      case panelQuestionType.DROPDOWN:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter panel question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="dropdownUnique">
+                      Dropdown Unique Question Count
+                    </Label>
+                    <Input
+                      id="dropdownUnique"
+                      name="dropdownUnique"
+                      placeholder="Enter dropdown unique question count"
+                      type="text"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          setQuesUniqueDropdownCount([]);
+                          setQuesChild([]);
+                        } else {
+                          setQuesUniqueDropdownCount(
+                            new Array(
+                              parseInt(sanatizeHtml(e.target.value))
+                            ).fill(0)
+                          );
+                          setQuesChild(
+                            new Array(
+                              parseInt(sanatizeHtml(e.target.value))
+                            ).fill({
+                              question: "",
+                              textAllowed: false,
+                              photoAllowed: false,
+                            })
+                          );
+                        }
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="dropdownLimit">Question Dropdown Limit</Label>
+                    <Input
+                      id="dropdownLimit"
+                      name="dropdownLimit"
+                      placeholder="Enter panel question dropdown limit"
+                      type="number"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          setQuesDropdownLimit(1);
+                        } else {
+                          setQuesDropdownLimit(
+                            parseInt(sanatizeHtml(e.target.value))
+                          );
+                        }
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="question">Dropdown text</Label>
+                    <Input
+                      id="dropquestion"
+                      name="dropquestion"
+                      placeholder="Enter dropdown text"
+                      type="text"
+                      onChange={(e) =>
+                        setDropdownText(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              {quesUniqueDropdownCount.map((ele, index) => (
+                <div key={index}>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="email">
+                          Question Dropdown Text {index + 1}
+                        </Label>
+                        <Input
+                          id="srno"
+                          name="srno"
+                          placeholder="Enter panel dropdown question"
+                          type="text"
+                          onChange={(e) => {
+                            let newQuesChild = [...quesChild];
+                            newQuesChild[index] = {
+                              ...newQuesChild[index],
+                              question: sanatizeHtml(e.target.value),
+                            };
+                            setQuesChild(newQuesChild);
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup className="h-full flex justify-center items-center gap-5">
+                        <FormGroup check inline>
+                          <Input
+                            checked={quesChild[index].textAllowed}
+                            type="checkbox"
+                            onChange={() => {
+                              let newQuesChild = [...quesChild];
+                              newQuesChild[index] = {
+                                ...newQuesChild[index],
+                                textAllowed: !quesChild[index].textAllowed,
+                              };
+                              setQuesChild(newQuesChild);
+                            }}
+                          />
+                          <Label check className="text-black">
+                            Text allowed ?
+                          </Label>
+                        </FormGroup>
+                        <FormGroup check inline>
+                          <Input
+                            checked={quesChild[index].photoAllowed}
+                            type="checkbox"
+                            onChange={() => {
+                              let newQuesChild = [...quesChild];
+                              newQuesChild[index] = {
+                                ...newQuesChild[index],
+                                photoAllowed: !quesChild[index].photoAllowed,
+                              };
+                              setQuesChild(newQuesChild);
+                            }}
+                          />
+                          <Label check className="text-black">
+                            Photo Allowed ?
+                          </Label>
+                        </FormGroup>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+            </Form>
+          </div>
+        );
+      case panelQuestionType.DELETE:
+        return (
+          <div>
+            <Form className="w-full text-black">
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="email">Question Serial Number</Label>
+                    <Input
+                      id="srno"
+                      name="srno"
+                      placeholder="Enter panel question serial number"
+                      type="number"
+                      onChange={(e) =>
+                        setQuesSrNo(sanatizeHtml(e.target.value))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
-  const handleRemoveCategory = async (category) => {
+  const handleDeleteSingleQuestion = async () => {
     try {
-      if (category === "Others") return;
       setIsLoading(true);
-      const response = await axios.put("/api/panelfaultreasons", {
-        category: sanatizeHtml(category),
+      const response = await axios.put("/api/panelfaultquestions", {
+        srNo: quesSrNo,
       });
-      if (response.status === 200) {
-        fetchCategories();
-      }
-    } catch (error) {
+      console.log("response", response);
+      toast("Question Deleted successfully");
       setIsLoading(false);
-      console.error(error);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAllQuestions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete("/api/panelfaultquestions");
+      console.log("response", response);
+      toast("All Questions Deleted successfully");
+      setIsLoading(false);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="h-full">
-      {isLoading && (
-        <div className="flex justify-center items-center h-full">
-          <BounceLoader color={spinnerColor} />
+    <div className="mt-4">
+      <div className="flex flex-col">
+        <div className="flex flex-row items-center">
+          <div className="grid grid-flow-row grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
+            <div>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 rounded-lg w-full h-[5vh] text-black text-xl`}
+              >
+                Question Type :
+              </span>
+            </div>
+            <div onClick={() => setQuestionType(panelQuestionType.DEFAULT)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                  questionType === panelQuestionType.DEFAULT
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                } w-full h-[5vh]`}
+              >
+                {panelQuestionType.DEFAULT}
+              </span>
+            </div>
+            <div onClick={() => setQuestionType(panelQuestionType.DROPDOWN)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                  questionType === panelQuestionType.DROPDOWN
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                } w-full h-[5vh]`}
+              >
+                {panelQuestionType.DROPDOWN}
+              </span>
+            </div>
+            <div onClick={() => setQuestionType(panelQuestionType.DELETE)}>
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg text-white bg-red-600 dark:bg-red-600 w-full h-[5vh]`}
+              >
+                DELETE QUESTIONS
+              </span>
+            </div>
+          </div>
         </div>
-      )}
-      {!isLoading && (
-        <>
-          <div className="flex flex-row justify-center items-center gap-2">
-            <div className="w-[70%]">
-              <input
-                type="text"
-                id="panelCategory"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Enter new category"
-                onChange={(e) => setNewCategory(e.target.value)}
-              />
-            </div>
-            <div
-              className="flex flex-row gap-2 justify-center items-center p-1 rounded-lg border-2 border-green-500 cursor-pointer hover:bg-green-300 bg-green-400 w-[30%]"
-              onClick={() => handleSubmitCategory()}
-            >
-              <div className="text-md text-black ">Add new category</div>
-              <div className="w-[10%] p-1 mt-1">
-                <img src="/images/add.svg" alt="add icon" />
-              </div>
-            </div>
-          </div>
-          <div className="mt-10">
-            <div className="text-2xl text-black">
-              Already added categories :
-            </div>
-            <div className="mt-6 overflow-y-scroll max-h-[61vh]">
-              {categories.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row justify-between items-center gap-2 p-2 rounded-lg border-2 border-gray-300 mt-2 cursor-pointer hover:bg-gray-200 h-16"
-                  onClick={() => handleRemoveCategory(category)}
+        <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full min-h-[80vh]">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 h-[5%]">
+            {questionType}{" "}
+            {questionType === panelQuestionType.DELETE
+              ? ""
+              : "Question Type"}
+          </h3>
+          <div>{getQuestionTypeForm(questionType)}</div>
+          <div>
+            {!isLoading && (
+              <>
+                {questionType !== panelQuestionType.DELETE && (
+                  <Button
+                    color="primary"
+                    className="mt-4"
+                    onClick={() => handleAddQuestion()}
+                  >
+                    Add Question
+                  </Button>
+                )}
+                {questionType === panelQuestionType.DELETE && (
+                  <div className="flex gap-5">
+                    <Button
+                      color="danger"
+                      className="mt-4"
+                      onClick={() => handleDeleteSingleQuestion()}
+                    >
+                      Delete Questions
+                    </Button>
+                    <Button
+                      color="danger"
+                      className="mt-4"
+                      onClick={() => toggle()}
+                    >
+                      Delete All Questions
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+            {isLoading && <BounceLoader color={spinnerColor} />}
+            <Modal isOpen={modal} toggle={toggle}>
+              <ModalHeader toggle={toggle}>
+                Delete All Panel Questions ?
+              </ModalHeader>
+              <ModalBody>
+                Are you sure to delete all panel questions ?
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  onClick={() => {
+                    handleDeleteAllQuestions();
+                    toggle();
+                  }}
                 >
-                  <div className="text-lg text-black pl-4">{category}</div>
-                  {category !== "Others" && (
-                    <div className="w-[4%] p-1 mt-1">
-                      <img src="/images/delete.svg" alt="delete icon" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                  Yes, Delete
+                </Button>{" "}
+                <Button color="secondary" onClick={toggle}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Modal>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
