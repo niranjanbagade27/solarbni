@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
+import { userRoles } from "@/constants/role";
 export default function LoginComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState({
@@ -21,7 +22,12 @@ export default function LoginComponent() {
       toast("Login Successful");
       setIsLoading(false);
       setTimeout(() => {
-        window.location.href = "/profile";
+        if (response.data.user.role === userRoles.ADMIN) {
+          window.location.href = "/profile";
+        }
+        if (response.data.user.role === userRoles.CONTRACTOR) {
+          window.location.href = "/ticket/raise";
+        }
       }, 2000);
     } catch (error) {
       // Handle errors here
