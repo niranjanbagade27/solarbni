@@ -23,6 +23,11 @@ const panelFaultReasonSchema = new Schema({
     type: Array,
     required: true,
   },
+  questionSection: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
 });
 
 const PanelFaultReason =

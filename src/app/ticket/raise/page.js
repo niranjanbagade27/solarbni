@@ -9,7 +9,7 @@ export default function TicketRaisePage() {
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";
-    } else if (!verifyingUser && isVerified.role !== userRoles.CONTRACTOR) {
+    } else if (!verifyingUser && isVerified.role === userRoles.OEM) {
       let redirectRole = "";
       switch (isVerified.role) {
         case "admin":
@@ -35,11 +35,10 @@ export default function TicketRaisePage() {
         </div>
       )}
       {!verifyingUser &&
-        isVerified._id &&
-        isVerified.role === userRoles.CONTRACTOR && (
-          <div className="flex justify-center items-center h-[85vh] flex-col gap-16 bg-[#efd9b4]">
+        isVerified._id && (
+          <div className="flex justify-center items-center h-screen flex-col gap-16 bg-[#efd9b4]">
             <div className="text-3xl">Hi, {isVerified.fullName}</div>
-            <div className="flex flex-row gap-20">
+            <div className="flex flex-col sm:flex-row gap-20">
               <div
                 className="border-2 border-black p-12 rounded-lg cursor-pointer text-xl hover:bg-slate-200"
                 onClick={() =>

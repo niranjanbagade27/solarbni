@@ -8,13 +8,24 @@ export async function PUT(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { email, password, fullName, companyName, gstNumber, phone } = body;
+    const {
+      email,
+      password,
+      fullName,
+      companyName,
+      gstNumber,
+      phone,
+      officeAddress,
+      pincode,
+    } = body;
     const sanitizedEmail = sanitizeHtml(email);
     const sanitizedfullName = sanitizeHtml(fullName);
     const sanitizedcompanyName = sanitizeHtml(companyName);
     const sanitizedGstNumber = sanitizeHtml(gstNumber);
     const sanitizedPhone = sanitizeHtml(phone);
     const sanitizedPassword = sanitizeHtml(password);
+    const sanitizedOfficeAddress = sanitizeHtml(officeAddress);
+    const sanitizedPincode = sanitizeHtml(pincode);
     const getUser = await User.findOne({
       email: sanitizedEmail,
       role: userRoles.CONTRACTOR,
@@ -36,6 +47,8 @@ export async function PUT(request) {
         companyName: sanitizedcompanyName,
         gstnumber: sanitizedGstNumber,
         phone: sanitizedPhone,
+        officeAddress: sanitizedOfficeAddress,
+        pincode: sanitizedPincode,
         ...(sanitizedPassword && { password: sanitizedPassword }),
       },
       { new: true, w: "majority" }

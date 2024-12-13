@@ -11,13 +11,15 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import { threePhaseQuestions } from "@/constants/threePhaseQuestions";
 import { singlePhaseQuestions } from "@/constants/singlePhaseQuestions";
+import uploadPdf from "@/util/uploadPdf";
+import { InverterTicketDetails } from "@/components/InverterTicketDetails/InverterTicketDetails";
 
 export default function RaiseInverterTicketPage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";
-    } else if (!verifyingUser && isVerified.role !== userRoles.CONTRACTOR) {
+    } else if (!verifyingUser && isVerified.role === userRoles.OEM) {
       let redirectRole = "";
       switch (isVerified.role) {
         case "admin":
@@ -35,7 +37,10 @@ export default function RaiseInverterTicketPage() {
       window.location.href = `/profile/${redirectRole}`;
     }
   }, [isVerified, verifyingUser, error]);
-  const [inverterQuestionData, setInverterQuestionData] = useState([]);
+  const [isQuestionLoading, setIsQuestionLoading] = useState(true);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [inverterQuestionDataOne, setInverterQuestionDataOne] = useState([]);
+  const [inverterQuestionDataTwo, setInverterQuestionDataTwo] = useState([]);
   const [inverterAnswers, setInverterAnswers] = useState({});
   const [quesDropdownLimit, setQuesDropdownLimit] = useState({});
   const [customerDetail, setCustomerDetail] = useState({
@@ -43,23 +48,45 @@ export default function RaiseInverterTicketPage() {
     custEmail: "",
     custPhone: "",
     custAddress: "",
+    custPincode: "",
+    sollarInstallerServicePerson: "",
+    sollarInstallerServicePersonPhone: "",
     custSysCapacity: "",
     custInstalledInverterCompany: "",
     custInstalledInverterModel: "",
     custSysAge: "",
+    custInverterCapacity: "",
+    custThreeOrSinglePhase: "",
+    custInstalledInverterSingleOrThreePhase: "",
+    custInstalledPanelCompany: "",
+    custInstalledPanelModel: "",
+    custPanelType: "",
+    custDcrOrNonDcr: "",
+    custPanelWattage: "",
+    custRemoteMonitoringUserId: "",
+    custRemoteMonitoringPassword: "",
   });
-  const [singleOrThreePhase, setSingleOrThreePhase] = useState([]);
   const [singlePhaseAnswers, setSinglePhaseAnswers] =
     useState(singlePhaseQuestions);
   const [threePhaseAnswers, setThreePhaseAnswers] =
     useState(threePhaseQuestions);
-
+  const [pdfUrl, setPdfUrl] = useState();
+  // "https://uhzwchr2w8givz2o.public.blob.vercel-storage.com/inverter_ticket-wGqLNYlu0QmxNOXXmHpyIbdzQNEDAD"
   let pdfQuesNo = 1;
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get("/api/inverterfaultquestions");
-      setInverterQuestionData(result.data.questions);
+      const allQuestions = result.data.questions;
+      const sectionOne = allQuestions.filter(
+        (question) => parseInt(question.questionSection) === 1
+      );
+      const sectionTwo = allQuestions.filter(
+        (question) => parseInt(question.questionSection) === 2
+      );
+      setInverterQuestionDataOne(sectionOne);
+      setInverterQuestionDataTwo(sectionTwo);
+      setIsQuestionLoading(false);
     };
     fetchData();
   }, []);
@@ -68,19 +95,22 @@ export default function RaiseInverterTicketPage() {
     setQuesDropdownLimit({ ...quesDropdownLimit, [srNo]: parseInt(value) });
   };
 
-  const getDefaultInverterQuestionForm = (question) => {
+  const getDefaultInverterQuestionForm = (question, index) => {
     const ques = question.questionChild[0];
     return (
-      <Col>
+      <Col key={index}>
         <FormGroup className="flex flex-col gap-2">
-          <Label for="inverterQuestion" className="font-medium">
+          <Label
+            for={`inverterQuestion-${ques.question}-${index}`}
+            className="font-medium"
+          >
             {ques.question}
           </Label>
           {ques.textAllowed && (
             <Input
               type="text"
-              name="inverterQuestion"
-              id="inverterQuestion"
+              name={`inverterQuestion-${ques.question}-${index}`}
+              id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Enter your answer"
               onChange={(e) =>
                 setInverterAnswers({
@@ -97,8 +127,8 @@ export default function RaiseInverterTicketPage() {
           {ques.photoAllowed && (
             <Input
               type="file"
-              name="inverterQuestion"
-              id="inverterQuestion"
+              name={`inverterQuestion-${ques.question}-${index}`}
+              id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
               accept="image/*"
               onChange={(e) => {
@@ -125,18 +155,21 @@ export default function RaiseInverterTicketPage() {
     );
   };
 
-  const getDropdownInverterForm = (question) => {
+  const getDropdownInverterForm = (question, index) => {
     return (
       <>
-        <Col>
+        <Col key={index}>
           <FormGroup>
-            <Label for="intervention" className="font-medium">
+            <Label
+              for={`inverter-${question.question}-${index}`}
+              className="font-medium"
+            >
               {question.question}
             </Label>
             <Input
               type="select"
-              name="intervention"
-              id="intervention"
+              name={`inverter-${question.question}-${index}`}
+              id={`inverter-${question.question}-${index}`}
               onChange={(e) => {
                 handleInverterDropdownLimit(question.srNo, e.target.value);
                 const updatedAnswers = { ...inverterAnswers };
@@ -231,9 +264,11 @@ export default function RaiseInverterTicketPage() {
   const addHeader = (pdf) => {
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0);
-    pdf.text(isVerified.companyName, 20, 8);
-    pdf.text(customerDetail.custAddress, 20, 13);
-    pdf.text(`${customerDetail.custSysCapacity} kW`, 20, 18);
+    pdf.text(
+      `${customerDetail.custName}, ${isVerified.companyName}, ${customerDetail.custSysCapacity} kW`,
+      20,
+      8
+    );
   };
 
   const addFooter = (pdf, currPage, totalPages) => {
@@ -262,7 +297,7 @@ export default function RaiseInverterTicketPage() {
     pdfQuesNo = pdfQuesNo + 1;
   };
 
-  const generatePdf = () => {
+  const generatePdf = async () => {
     console.log("submitting ticket");
     console.log(customerDetail);
     console.log(singlePhaseAnswers);
@@ -286,13 +321,16 @@ export default function RaiseInverterTicketPage() {
     pdf.setLineWidth(1.5);
     pdf.setDrawColor(150, 75, 0);
     pdf.line(125, 70, 250, 70);
-    pdf.setFontSize(15);
-    pdf.text(customerDetail.custName, 155, 90);
-    pdf.text(`${customerDetail.custSysCapacity} kW`, 155, 100);
-    pdf.text(customerDetail.custAddress, 155, 110);
-    pdf.text("Installed by,", 155, 130);
-    pdf.text(isVerified.companyName, 155, 140);
-    pdf.text(new Date().toDateString(), 155, 150);
+    pdf.setFontSize(12);
+    pdf.text("Customer Name", 125, 90);
+    pdf.text(`: ${customerDetail.custName}`, 162, 90);
+    pdf.text(`System Capacity`, 125, 100);
+    pdf.text(`: ${customerDetail.custSysCapacity} kW`, 162, 100);
+    pdf.text("Customer Address", 125, 110);
+    pdf.text(`: ${customerDetail.custAddress}`, 162, 110);
+    pdf.text("Installed by,", 125, 130);
+    pdf.text(isVerified.companyName, 135, 140);
+    pdf.text(new Date().toDateString(), 135, 150);
     pdf.addPage();
     pdf.setTextColor(0, 0, 0);
     addHeader(pdf);
@@ -313,13 +351,19 @@ export default function RaiseInverterTicketPage() {
     );
     pdf.setLineWidth(0.5);
     pdf.line(20, 84, 290, 84);
-    pdf.text(`System age (Years) - ${customerDetail.custSysAge}`, 20, 94);
+    pdf.text(`System age (Months) - ${customerDetail.custSysAge}`, 20, 94);
     pdf.setLineWidth(0.5);
     pdf.line(20, 99, 290, 99);
     pdf.text(`Contractor Company name - ${isVerified.companyName}`, 20, 109);
     pdf.setLineWidth(0.5);
     pdf.line(20, 114, 290, 114);
-    pdf.text(`Contractor address - Not Found`, 20, 124);
+    pdf.text(
+      `Contractor address - ${
+        isVerified?.address ? isVerified?.address : "Not Found"
+      }`,
+      20,
+      124
+    );
     pdf.setLineWidth(0.5);
     pdf.line(20, 129, 290, 129);
     pdf.text(`GST number (if any) - ${isVerified.gstnumber}`, 20, 139);
@@ -339,7 +383,9 @@ export default function RaiseInverterTicketPage() {
     );
     pdf.setLineWidth(0.5);
     pdf.line(20, 174, 290, 174);
-    if (singleOrThreePhase.length === 1) {
+    if (
+      parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 1
+    ) {
       Object.keys(singlePhaseAnswers).forEach((key) => {
         addNewPage({
           pdf,
@@ -349,7 +395,9 @@ export default function RaiseInverterTicketPage() {
         });
       });
     }
-    if (singleOrThreePhase.length === 3) {
+    if (
+      parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 3
+    ) {
       Object.keys(threePhaseAnswers).forEach((key) => {
         addNewPage({
           pdf,
@@ -372,7 +420,10 @@ export default function RaiseInverterTicketPage() {
       pdf.setPage(currPage);
       addFooter(pdf, currPage, totalPages);
     }
-    pdf.save("inverter-ticket.pdf");
+    // pdf.save("inverter-ticket.pdf");
+    const pdfBlob = await uploadPdf({ pdfFileName: "inverter_ticket", pdf });
+    setIsGeneratingPdf(false);
+    setPdfUrl(pdfBlob.url);
   };
 
   const getSinglePhaseForm = () => {
@@ -897,131 +948,85 @@ export default function RaiseInverterTicketPage() {
   };
 
   const handleSubmitInverterTicket = () => {
+    setIsGeneratingPdf(true);
     generatePdf();
   };
 
   return (
-    <div className="bg-[#efd9b4]">
-      {verifyingUser && (
+    <div className="bg-[#efd9b4] mt-20 md:mt-0">
+      {(verifyingUser || isQuestionLoading) && (
         <div className="flex justify-center items-center h-full">
           <BounceLoader color={spinnerColor} />
         </div>
       )}
-      {!verifyingUser && isVerified._id && (
-        <div>
-          <h1>Raise Inverter Ticket</h1>
-          <br></br>
-          <Form>
-            <CustomerDetailForm
-              handleCustomerDetailForm={setCustomerDetail}
-              customerDetail={customerDetail}
-            />
-            <Row>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="installedInverterComapny" className="font-medium">
-                    Name of inverter manufacturer
-                  </Label>
-                  <Input
-                    type="text"
-                    name="installedInverterComapny"
-                    id="installedInverterComapny"
-                    placeholder="Enter name of inverter manufacturer"
-                    onChange={(e) =>
-                      setCustomerDetail({
-                        ...customerDetail,
-                        custInstalledInverterCompany: sanatizeHtml(
-                          e.target.value
-                        ),
-                      })
-                    }
-                  />
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="installedInverterModel" className="font-medium">
-                    Inverter model name
-                  </Label>
-                  <Input
-                    type="text"
-                    name="installedInverterModel"
-                    id="installedInverterModel"
-                    placeholder="Enter name of inverter model"
-                    onChange={(e) =>
-                      setCustomerDetail({
-                        ...customerDetail,
-                        custInstalledInverterModel: sanatizeHtml(
-                          e.target.value
-                        ),
-                      })
-                    }
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={12}>
-                <FormGroup>
-                  <Label for="singleOrThreePhase" className="font-medium">
-                    Phase (Single phase or three phase)
-                  </Label>
-                  <Input
-                    type="select"
-                    name="singleOrThreePhase"
-                    id="singleOrThreePhase"
-                    onChange={(e) => {
-                      if (e.target.value === "") {
-                        setSingleOrThreePhase([]);
-                      } else {
-                        setSingleOrThreePhase(
-                          new Array(parseInt(e.target.value)).fill(0)
-                        );
-                        if (e.target.value === "1") {
-                          setThreePhaseAnswers(threePhaseQuestions);
-                        }
-                        if (e.target.value === "3") {
-                          setSinglePhaseAnswers(singlePhaseQuestions);
-                        }
-                      }
-                    }}
+      {!verifyingUser && isVerified._id && !isQuestionLoading && (
+        <>
+          {!pdfUrl && (
+            <div>
+              <div className="text-4xl">Raise new inverter ticket</div>
+              <br></br>
+              <Form>
+                <CustomerDetailForm
+                  handleCustomerDetailForm={setCustomerDetail}
+                  customerDetail={customerDetail}
+                  contractorDetail={isVerified}
+                />
+                <div className="text-3xl">Faulty Inverter Question</div>
+                <hr />
+                {inverterQuestionDataOne.map((question, index) => (
+                  <Row key={index}>
+                    {question.maxDropdownElements === 1
+                      ? getDefaultInverterQuestionForm(question, index)
+                      : getDropdownInverterForm(question, index)}
+                    <hr />
+                  </Row>
+                ))}
+                {parseInt(
+                  customerDetail.custInstalledInverterSingleOrThreePhase
+                ) === 1 && (
+                  <>
+                    <Row>{getSinglePhaseForm()}</Row>
+                  </>
+                )}
+                {parseInt(
+                  customerDetail.custInstalledInverterSingleOrThreePhase
+                ) === 3 && (
+                  <>
+                    <Row>{getThreePhaseForm()}</Row>
+                  </>
+                )}
+                {inverterQuestionDataTwo.map((question, index) => (
+                  <Row key={index}>
+                    {question.maxDropdownElements === 1
+                      ? getDefaultInverterQuestionForm(question, index)
+                      : getDropdownInverterForm(question, index)}
+                    <hr />
+                  </Row>
+                ))}
+                {!isGeneratingPdf && (
+                  <Button
+                    color="primary"
+                    onClick={() => handleSubmitInverterTicket()}
                   >
-                    <option value="">Select</option>
-                    <option key={0} value={1}>
-                      1
-                    </option>
-                    <option key={1} value={3}>
-                      3
-                    </option>
-                  </Input>
-                </FormGroup>
-              </Col>
-            </Row>
-            {singleOrThreePhase.length === 1 && (
-              <>
-                <Row>{getSinglePhaseForm()}</Row>
-              </>
-            )}
-            {singleOrThreePhase.length === 3 && (
-              <>
-                <Row>{getThreePhaseForm()}</Row>
-              </>
-            )}
-            {inverterQuestionData.map((question) => (
-              <Row key={question._id}>
-                {question.maxDropdownElements === 1
-                  ? getDefaultInverterQuestionForm(question)
-                  : getDropdownInverterForm(question)}
-              </Row>
-            ))}
-            <Button
-              color="primary"
-              onClick={() => handleSubmitInverterTicket()}
-            >
-              Submit
-            </Button>
-          </Form>
-        </div>
+                    Submit
+                  </Button>
+                )}
+                {isGeneratingPdf && (
+                  <div className="flex justify-center items-center h-full">
+                    <BounceLoader color={spinnerColor} />
+                  </div>
+                )}
+              </Form>
+            </div>
+          )}
+          {pdfUrl && (
+            <InverterTicketDetails
+              pdfUrl={pdfUrl}
+              customerDetail={customerDetail}
+              contractorDetail={isVerified}
+            />
+          )}
+        </>
       )}
     </div>
   );

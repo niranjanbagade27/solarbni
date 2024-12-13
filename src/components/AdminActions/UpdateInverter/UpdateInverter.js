@@ -38,6 +38,8 @@ export default function UpdateInverter() {
   const [quesDropdownText, setDropdownText] = useState("");
   const [quesUniqueDropdownCount, setQuesUniqueDropdownCount] = useState([]);
 
+  const [questionSection, setQuestionSection] = useState(1);
+
   const handleAddQuestion = async () => {
     try {
       setIsLoading(true);
@@ -53,13 +55,14 @@ export default function UpdateInverter() {
             photoAllowed: quesPhotoAllowedDefault,
           },
         ];
+        quespayload.questionSection = questionSection;
       } else {
         quespayload.maxDropdownElements = quesDropdownLimit;
         quespayload.srNo = sanatizeHtml(quesSrNo);
         quespayload.question = sanatizeHtml(quesDropdownText);
         quespayload.questionChild = quesChild;
+        quespayload.questionSection = questionSection;
       }
-      console.log("quespayload", quespayload);
       const response = await axios.post("/api/inverterfaultquestions", {
         ...quespayload,
       });
@@ -79,7 +82,7 @@ export default function UpdateInverter() {
           <div>
             <Form className="w-full text-black">
               <Row>
-                <Col md={6}>
+                <Col md={6} className="mt-4 sm:mt-0">
                   <FormGroup>
                     <Label for="email">Question Serial Number</Label>
                     <Input
@@ -94,7 +97,7 @@ export default function UpdateInverter() {
                   </FormGroup>
                 </Col>
                 <Col md={6}>
-                  <FormGroup className="h-full flex justify-center items-center gap-5">
+                  <FormGroup className="h-full flex flex-col sm:flex-row justify-center items-start sm:items-center gap-3 sm:gap-5">
                     <FormGroup check inline>
                       <Input
                         checked={quesTextAllowedDefault}
@@ -123,7 +126,7 @@ export default function UpdateInverter() {
                 </Col>
               </Row>
               <Row>
-                <Col md={12}>
+                <Col md={12} className="mt-4 sm:mt-0">
                   <FormGroup>
                     <Label for="question">Question</Label>
                     <Input
@@ -135,6 +138,32 @@ export default function UpdateInverter() {
                         setQuesTitleDefault(sanatizeHtml(e.target.value))
                       }
                     />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="quesHalf" className="font-medium">
+                      Question Group Section
+                    </Label>
+                    <Input
+                      type="select"
+                      name="quesHalf"
+                      id="quesHalf"
+                      onChange={(e) => {
+                        setQuestionSection(parseInt(e.target.value));
+                      }}
+                      required
+                    >
+                      <option value="">Select</option>
+                      <option key={0} value={1}>
+                        1
+                      </option>
+                      <option key={1} value={2}>
+                        2
+                      </option>
+                    </Input>
                   </FormGroup>
                 </Col>
               </Row>
@@ -228,6 +257,32 @@ export default function UpdateInverter() {
                         setDropdownText(sanatizeHtml(e.target.value))
                       }
                     />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="quesHalf" className="font-medium">
+                      Question Group Section
+                    </Label>
+                    <Input
+                      type="select"
+                      name="quesHalf"
+                      id="quesHalf"
+                      onChange={(e) => {
+                        setQuestionSection(parseInt(e.target.value));
+                      }}
+                      required
+                    >
+                      <option value="">Select</option>
+                      <option key={0} value={1}>
+                        1
+                      </option>
+                      <option key={1} value={2}>
+                        2
+                      </option>
+                    </Input>
                   </FormGroup>
                 </Col>
               </Row>
@@ -359,11 +414,11 @@ export default function UpdateInverter() {
     <div className="mt-4">
       <div className="flex flex-col">
         <div className="flex flex-row items-center">
-          <div className="grid grid-flow-row grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
+          <div className="grid grid-flow-col grid-rows-5 sm:grid-flow-row sm:grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
             <div>
               <span
                 href="#"
-                className={`inline-flex items-center px-4 py-3 rounded-lg w-full h-[5vh] text-black text-xl`}
+                className={`inline-flex items-center sm:px-4 py-3 rounded-lg w-full h-[5vh] text-black text-xl`}
               >
                 Question Type :
               </span>
@@ -402,7 +457,7 @@ export default function UpdateInverter() {
             </div>
           </div>
         </div>
-        <div className="p-6 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full min-h-[80vh]">
+        <div className="p-4 sm:p-6 -mt-12 sm:-mt-0 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full sm:min-h-[80vh]">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 h-[5%]">
             {questionType}{" "}
             {questionType === inverterQuestionType.DELETE

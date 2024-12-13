@@ -7,7 +7,13 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { maxDropdownElements, srNo, question, questionChild } = body;
+    const {
+      maxDropdownElements,
+      srNo,
+      question,
+      questionChild,
+      questionSection,
+    } = body;
     const getQuestionWithSrNo = await InverterFaultReason.findOne({
       srNo: srNo,
     });
@@ -26,6 +32,7 @@ export async function POST(request) {
       srNo,
       question,
       questionChild,
+      questionSection,
     });
     await newQuestion.save();
     return NextResponse.json(
