@@ -12,7 +12,7 @@ import UpdateContractor from "@/components/AdminActions/UpdateContractor/UpdateC
 import AdminProfile from "@/components/AdminActions/AdminProfile/AdminProfile";
 export default function AdminProfilePage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
-  const [currentTab, setCurrentTab] = useState(adminProfileTabs.INVERTER);
+  const [currentTab, setCurrentTab] = useState(adminProfileTabs.PROFILE);
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";
@@ -53,7 +53,7 @@ export default function AdminProfilePage() {
   };
 
   return (
-    <div>
+    <div className="mt-20 sm:mt-0">
       {verifyingUser && (
         <div className="flex justify-center items-center h-full">
           <BounceLoader color={spinnerColor} />
@@ -62,7 +62,7 @@ export default function AdminProfilePage() {
       {!verifyingUser && isVerified._id && (
         <div className="my-6">
           <div className="flex flex-col">
-            <div className="grid grid-flow-row grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
+            <div className="grid grid-flow-row grid-rows-5 sm:grid-flow-row sm:grid-cols-5 gap-2 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
               <div onClick={() => setCurrentTab(adminProfileTabs.PROFILE)}>
                 <span
                   href="#"

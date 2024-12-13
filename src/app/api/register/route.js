@@ -7,9 +7,18 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log("Register body ",body);
-    const { email, password, fullName, companyName, role, gstNumber, phone} =
-      body;
+    console.log("Register body ", body);
+    const {
+      email,
+      password,
+      fullName,
+      companyName,
+      role,
+      gstNumber,
+      phone,
+      officeAddress,
+      pincode,
+    } = body;
     const getUser = await User.findOne({ email });
     if (getUser) {
       return NextResponse.json(
@@ -32,6 +41,8 @@ export async function POST(request) {
       gstnumber: gstNumber,
       phone,
       verified: false,
+      officeAddress,
+      pincode,
     });
     await user.save();
     const { password: savedUserPassword, ...userDetailsWithoutPassword } =

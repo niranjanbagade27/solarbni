@@ -41,7 +41,13 @@ const userSchema = new Schema({
   },
   verified: {
     type: Boolean,
-  }
+  },
+  officeAddress: {
+    type: String,
+  },
+  pincode: {
+    type: String,
+  },
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
