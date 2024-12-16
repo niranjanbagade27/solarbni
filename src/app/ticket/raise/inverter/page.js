@@ -3,7 +3,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useVerifyUser from "@/hooks/verifyUser";
 import { userRoles } from "@/constants/role";
-import { Form, FormGroup, Label, Input, Row, Col, Button } from "reactstrap";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "reactstrap";
 import CustomerDetailForm from "@/components/CustomerDetailForm/CustomerDetailForm";
 import sanatizeHtml from "sanitize-html";
 import { jsPDF } from "jspdf";
@@ -265,7 +277,7 @@ export default function RaiseInverterTicketPage() {
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0);
     pdf.text(
-      `${customerDetail.custName}, ${isVerified.companyName}, ${customerDetail.custSysCapacity} kW`,
+      `${isVerified.companyName}, ${customerDetail.custAddress}, ${customerDetail.custSysCapacity} kW`,
       20,
       8
     );
@@ -281,28 +293,200 @@ export default function RaiseInverterTicketPage() {
 
   const addNewPage = async ({ pdf, question, answer, photo }) => {
     pdf.addPage();
-    addHeader(pdf);
+    pdf.addImage("/images/page_bg.png", "JPEG", 0, 0, 297, 210);
     pdf.setFontSize(20);
-    pdf.text(`${pdfQuesNo} - ${question}`, 20, 35);
+    pdf.text(`Q - ${question}`, 20, 25);
     if (answer) {
       pdf.setFontSize(15);
       const splitText = pdf.splitTextToSize(`Answer: ${answer}`, 250);
-      pdf.text(splitText, 20, 50);
+      pdf.text(splitText, 20, 40);
     }
     if (photo) {
       pdf.addImage(photo, "PNG", 45, 70, 212, 120);
     } else {
       pdf.addImage("/images/no_photo.jpg", "JPEG", 100, 80, 100, 100);
     }
-    pdfQuesNo = pdfQuesNo + 1;
+  };
+
+  const addEmailContent = (pdf) => {
+    pdf.setFontSize(13);
+    pdf.addImage("/images/page_bg.png", "JPEG", 0, 0, 297, 210);
+    pdf.text(`Date : ${new Date().toDateString()}`, 230, 15);
+    pdf.setFontSize(18);
+    pdf.text(
+      `Subject: Request for service support for Solar PV system`,
+      20,
+      35
+    );
+    pdf.setFontSize(13);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(
+      `Respected ${customerDetail.custInstalledInverterCompany} representative,`,
+      20,
+      50
+    );
+    const splitEmailHeader = pdf.splitTextToSize(
+      `We require service support with ${customerDetail.custInstalledInverterCompany} inverter installed at ${customerDetail.custAddress} with plant capacity ${customerDetail.custSysCapacity}kW. This report has been generated to provide you all necessary parameters required for site assessment.`,
+      260
+    );
+    pdf.text(splitEmailHeader, 27, 60);
+    pdf.text(`Looking forward to your positive feedback.`, 27, 78);
+    pdf.text(`Thanks, and regards,`, 20, 90);
+    pdf.text(`${customerDetail.custName}`, 20, 100);
+    pdf.text(`${customerDetail.custPhone}`, 20, 110);
+    pdf.text(`Project installed by,`, 20, 130);
+    pdf.text(`${isVerified.fullName}`, 20, 140);
+    pdf.text(`${isVerified.companyName}`, 20, 150);
+    pdf.text(
+      `Service person : ${customerDetail.sollarInstallerServicePerson}`,
+      20,
+      160
+    );
+    pdf.text(
+      `Service person contact number : ${customerDetail.sollarInstallerServicePersonPhone}`,
+      20,
+      170
+    );
+  };
+
+  const addDashLine = (pdf, y) => {
+    pdf.setLineWidth(0.3);
+    pdf.setLineDash([2.0]);
+    pdf.setDrawColor(0, 0, 0);
+    pdf.line(20, y, 285, y);
+  };
+
+  const addCustomerInformation = (pdf) => {
+    pdf.setFontSize(24);
+    pdf.addImage("/images/page_bg.png", "JPEG", 0, 0, 297, 210);
+    pdf.text(`Customer Information : `, 20, 35);
+    pdf.setFontSize(14);
+    pdf.text(`Customer Name - ${customerDetail.custName}`, 20, 50);
+    addDashLine(pdf, 58);
+    pdf.text(`Customer email ID - ${customerDetail.custEmail}`, 20, 68);
+    addDashLine(pdf, 76);
+    pdf.text(`Customer contact number - ${customerDetail.custPhone}`, 20, 86);
+    addDashLine(pdf, 94);
+    const splitAddress = pdf.splitTextToSize(
+      `Site address - ${customerDetail.custAddress}`,
+      260
+    );
+    pdf.text(splitAddress, 20, 104);
+    addDashLine(pdf, 125);
+    pdf.text(`Site pincode - ${customerDetail.custPincode}`, 20, 135);
+    addDashLine(pdf, 143);
+  };
+
+  const addSolarInstallerInformation = (pdf) => {
+    pdf.setFontSize(24);
+    pdf.addImage("/images/page_bg.png", "JPEG", 0, 0, 297, 210);
+    pdf.text(`Solar Installer Information : `, 20, 35);
+    pdf.setFontSize(14);
+    pdf.text(
+      `Solar Installer company name - ${isVerified.companyName}`,
+      20,
+      50
+    );
+    addDashLine(pdf, 58);
+    pdf.text(
+      `Solar Installer company representative - ${isVerified.fullName}`,
+      20,
+      68
+    );
+    addDashLine(pdf, 76);
+    pdf.text(`Solar Installer contact number - ${isVerified.phone}`, 20, 86);
+    addDashLine(pdf, 94);
+    pdf.text(`Solar Installer Email ID - ${isVerified.email}`, 20, 104);
+    addDashLine(pdf, 112);
+    pdf.text(
+      `Solar Installer service person - ${customerDetail.sollarInstallerServicePerson}`,
+      20,
+      120
+    );
+    addDashLine(pdf, 128);
+    pdf.text(
+      `Solar Installer service person contact number - ${customerDetail.sollarInstallerServicePersonPhone}`,
+      20,
+      136
+    );
+    addDashLine(pdf, 144);
+    pdf.text(
+      `Solar Installer office address - ${isVerified.officeAddress}`,
+      20,
+      152
+    );
+    addDashLine(pdf, 160);
+    pdf.text(`Solar Installer pincode - ${isVerified.pincode}`, 20, 168);
+    addDashLine(pdf, 176);
+  };
+
+  const addSystemInformation = (pdf) => {
+    pdf.setFontSize(24);
+    pdf.addImage("/images/page_bg.png", "JPEG", 0, 0, 297, 210);
+    pdf.text(`System Information : `, 20, 35);
+    pdf.setFontSize(14);
+    pdf.text(
+      `Installed plant capacity (in kW) - ${customerDetail.custSysCapacity}`,
+      20,
+      50
+    );
+    addDashLine(pdf, 58);
+    pdf.text(`System age (in months) - ${customerDetail.custSysAge}`, 20, 68);
+    addDashLine(pdf, 76);
+    pdf.text(
+      `Inverter manufacturer - ${customerDetail.custInstalledInverterCompany}`,
+      20,
+      84
+    );
+    addDashLine(pdf, 92);
+    pdf.text(
+      `Inverter model name - ${customerDetail.custInstalledInverterModel}`,
+      20,
+      100
+    );
+    addDashLine(pdf, 108);
+    pdf.text(
+      `Solar panel manufacturer - ${customerDetail.custInstalledPanelCompany}`,
+      20,
+      116
+    );
+    addDashLine(pdf, 124);
+    pdf.text(`Solar panel type - ${customerDetail.custPanelType}`, 20, 132);
+    addDashLine(pdf, 140);
+    pdf.text(
+      `Solar panel wattage (Watt) - ${customerDetail.custPanelWattage}`,
+      20,
+      148
+    );
+    addDashLine(pdf, 156);
+    pdf.text(
+      `Remote monitoring UserID (if applicable) - ${
+        customerDetail.custRemoteMonitoringUserId
+          ? customerDetail.custRemoteMonitoringUserId
+          : "Not Found"
+      }`,
+      20,
+      164
+    );
+    addDashLine(pdf, 172);
+    pdf.text(
+      `Remote monitoring password (if applicable) - ${
+        customerDetail.custRemoteMonitoringPassword
+          ? customerDetail.custRemoteMonitoringPassword
+          : "Not Found"
+      }`,
+      20,
+      180
+    );
+    addDashLine(pdf, 188);
   };
 
   const generatePdf = async () => {
-    console.log("submitting ticket");
-    console.log(customerDetail);
-    console.log(singlePhaseAnswers);
-    console.log(threePhaseAnswers);
-    console.log(inverterAnswers);
+    // console.log("submitting ticket");
+    // console.log(customerDetail);
+    // console.log(singlePhaseAnswers);
+    // console.log(threePhaseAnswers);
+    // console.log(inverterAnswers);
     const pageWidth = 297;
     const pageHeight = 210;
     const pdf = new jsPDF("landscape", "mm", "a4");
@@ -312,77 +496,32 @@ export default function RaiseInverterTicketPage() {
     pdf.setFillColor(0, 0, 0, 250);
     pdf.rect(0, pageHeight - bottomHeight, pageWidth, bottomHeight, "F");
     pdf.addImage("/images/solarbni_logo.png", "JPEG", 30, 180, 50, 25);
-    pdf.addImage("/images/white_bg.jpg", "JPEG", 117, 20, 140, 150);
+    pdf.addImage("/images/white_bg.jpg", "JPEG", 110, 20, 170, 150);
     pdf.setFontSize(30);
     pdf.setTextColor(150, 75, 0);
-    pdf.text("SOLAR PV SYSTEM", 140, 35);
-    pdf.text("HEALTH PARAMETERS", 130, 50);
-    pdf.text("REPORT", 168, 65);
+    pdf.text("SOLAR PV SYSTEM HEALTH", 125, 35);
+    pdf.text("PARAMETERS REPORT", 138, 50);
     pdf.setLineWidth(1.5);
     pdf.setDrawColor(150, 75, 0);
-    pdf.line(125, 70, 250, 70);
-    pdf.setFontSize(12);
-    pdf.text("Customer Name", 125, 90);
-    pdf.text(`: ${customerDetail.custName}`, 162, 90);
-    pdf.text(`System Capacity`, 125, 100);
-    pdf.text(`: ${customerDetail.custSysCapacity} kW`, 162, 100);
-    pdf.text("Customer Address", 125, 110);
-    pdf.text(`: ${customerDetail.custAddress}`, 162, 110);
-    pdf.text("Installed by,", 125, 130);
-    pdf.text(isVerified.companyName, 135, 140);
-    pdf.text(new Date().toDateString(), 135, 150);
+    pdf.line(122, 60, 270, 60);
+    pdf.setFontSize(18);
+    pdf.text(`${customerDetail.custName}`, 125, 75);
+    pdf.text(`${customerDetail.custSysCapacity} kW`, 125, 85);
+    const splitAddress = pdf.splitTextToSize(customerDetail.custAddress, 150);
+    pdf.text(splitAddress, 125, 95);
+    pdf.text(`${customerDetail.custPincode}`, 125, 118);
+    pdf.text("Installed by,", 125, 128);
+    pdf.text(isVerified.companyName, 125, 138);
+    pdf.text(new Date().toDateString(), 125, 148);
     pdf.addPage();
     pdf.setTextColor(0, 0, 0);
-    addHeader(pdf);
-    pdf.setFontSize(25);
-    pdf.text(`Project Brief`, 20, 35);
-    pdf.setFontSize(15);
-    pdf.text(`Customer Name - ${customerDetail.custName}`, 20, 50);
-    pdf.setLineWidth(0.5);
-    pdf.setDrawColor(0, 0, 0);
-    pdf.line(20, 55, 290, 55);
-    pdf.text(`Customer Address - ${customerDetail.custAddress}`, 20, 64); //+10
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 69, 290, 69); //+5
-    pdf.text(
-      `System Capacity (kW) - ${customerDetail.custSysCapacity}`,
-      20,
-      79
-    );
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 84, 290, 84);
-    pdf.text(`System age (Months) - ${customerDetail.custSysAge}`, 20, 94);
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 99, 290, 99);
-    pdf.text(`Contractor Company name - ${isVerified.companyName}`, 20, 109);
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 114, 290, 114);
-    pdf.text(
-      `Contractor address - ${
-        isVerified?.address ? isVerified?.address : "Not Found"
-      }`,
-      20,
-      124
-    );
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 129, 290, 129);
-    pdf.text(`GST number (if any) - ${isVerified.gstnumber}`, 20, 139);
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 144, 290, 144);
-    pdf.text(
-      `Contracting company representative - ${isVerified.fullName}`,
-      20,
-      154
-    );
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 159, 290, 159);
-    pdf.text(
-      `Company representative contact no - ${isVerified.phone}`,
-      20,
-      169
-    );
-    pdf.setLineWidth(0.5);
-    pdf.line(20, 174, 290, 174);
+    addEmailContent(pdf);
+    pdf.addPage();
+    addCustomerInformation(pdf);
+    pdf.addPage();
+    addSolarInstallerInformation(pdf);
+    pdf.addPage();
+    addSystemInformation(pdf);
     if (
       parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 1
     ) {
@@ -418,12 +557,16 @@ export default function RaiseInverterTicketPage() {
     const totalPages = pdf.internal.getNumberOfPages();
     for (let currPage = 2; currPage <= totalPages; currPage++) {
       pdf.setPage(currPage);
+      addHeader(pdf);
       addFooter(pdf, currPage, totalPages);
     }
-    // pdf.save("inverter-ticket.pdf");
-    const pdfBlob = await uploadPdf({ pdfFileName: "inverter_ticket", pdf });
-    setIsGeneratingPdf(false);
-    setPdfUrl(pdfBlob.url);
+    pdf.save("inverter-ticket.pdf");
+    // const pdfBlob = await uploadPdf({
+    //   pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+    //   pdf,
+    // });
+    // setIsGeneratingPdf(false);
+    // setPdfUrl(pdfBlob.url);
   };
 
   const getSinglePhaseForm = () => {
@@ -1017,6 +1160,22 @@ export default function RaiseInverterTicketPage() {
                   </div>
                 )}
               </Form>
+              <Modal isOpen={isGeneratingPdf}>
+                <ModalHeader>Generating PDF</ModalHeader>
+                <ModalBody>
+                  <div className="flex flex-col gap-4 justify-center items-center">
+                    <div>
+                      Preparing PDF. Please wait, this may take a few minutes.
+                    </div>
+                    <div className="flex justify-center items-center h-full">
+                      <BounceLoader color={spinnerColor} />
+                    </div>
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <div className="text-rose-700 font-medium italic">{`Don't close the window until the PDF is generated.`}</div>
+                </ModalFooter>
+              </Modal>
             </div>
           )}
           {pdfUrl && (
