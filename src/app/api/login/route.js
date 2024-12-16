@@ -45,7 +45,7 @@ export async function POST(request) {
       return NextResponse.json({ user }, { status: 200 });
     } else {
       const token = jwt.sign({ user }, `${process.env.JWT_SECRET}`, {
-        expiresIn: "1h",
+        expiresIn: "5h",
       });
       const response = NextResponse.json({ token, user }, { status: 200 });
       response.headers.set(

@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const ticketSchema = new Schema({
+  ticketName: {
+    type: String,
+    required: true,
+  },
   contractorName: {
     type: String,
     required: true,
@@ -35,25 +39,29 @@ const ticketSchema = new Schema({
     type: String,
     required: true,
   },
+  customerPincode: {
+    type: String,
+    required: true,
+  },
   customerCapacity: {
     type: String,
     required: true,
   },
   installedPanelCompany: {
     type: String,
-    default: "NA"
+    default: "NA",
   },
   installedInverterCompany: {
     type: String,
-    default: "NA"
+    default: "NA",
   },
   installedPanelModel: {
     type: String,
-    default: "NA"
+    default: "NA",
   },
   installedInverterModel: {
     type: String,
-    default: "NA"
+    default: "NA",
   },
   pdfUrl: {
     type: String,
@@ -75,6 +83,12 @@ const ticketSchema = new Schema({
     required: true,
   },
   ticketChangedBy: {
+    type: String,
+  },
+  sollarInstallerServicePerson: {
+    type: String,
+  },
+  sollarInstallerServicePersonPhone: {
     type: String,
   },
 });
