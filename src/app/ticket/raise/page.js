@@ -36,7 +36,7 @@ export default function TicketRaisePage() {
       )}
       {!verifyingUser &&
         isVerified._id && (
-          <div className="flex justify-center items-center h-[80vh] flex-col gap-16 bg-[#efd9b4]">
+          <div className="flex justify-center items-center h-[80vh] flex-col gap-16">
             <div className="text-3xl">Hi, {isVerified.fullName}</div>
             <div className="flex flex-col sm:flex-row gap-20">
               <div

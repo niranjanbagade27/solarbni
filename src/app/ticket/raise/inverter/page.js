@@ -24,7 +24,7 @@ import { spinnerColor } from "@/constants/colors";
 import { threePhaseQuestions } from "@/constants/threePhaseQuestions";
 import { singlePhaseQuestions } from "@/constants/singlePhaseQuestions";
 import uploadPdf from "@/util/uploadPdf";
-import { InverterTicketDetails } from "@/components/InverterTicketDetails/InverterTicketDetails";
+import { GeneratedTicketDetails } from "@/components/GeneratedTicketDetails/GeneratedTicketDetails";
 
 export default function RaiseInverterTicketPage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
@@ -83,7 +83,6 @@ export default function RaiseInverterTicketPage() {
   const [threePhaseAnswers, setThreePhaseAnswers] =
     useState(threePhaseQuestions);
   const [pdfUrl, setPdfUrl] = useState();
-  // "https://uhzwchr2w8givz2o.public.blob.vercel-storage.com/inverter_ticket-wGqLNYlu0QmxNOXXmHpyIbdzQNEDAD"
   let pdfQuesNo = 1;
 
   useEffect(() => {
@@ -306,6 +305,7 @@ export default function RaiseInverterTicketPage() {
     } else {
       pdf.addImage("/images/no_photo.jpg", "JPEG", 100, 80, 100, 100);
     }
+    pdfQuesNo = pdfQuesNo + 1;
   };
 
   const addEmailContent = (pdf) => {
@@ -372,9 +372,9 @@ export default function RaiseInverterTicketPage() {
       260
     );
     pdf.text(splitAddress, 20, 104);
-    addDashLine(pdf, 125);
-    pdf.text(`Site pincode - ${customerDetail.custPincode}`, 20, 135);
-    addDashLine(pdf, 143);
+    addDashLine(pdf, 112);
+    pdf.text(`Site pincode - ${customerDetail.custPincode}`, 20, 122);
+    addDashLine(pdf, 130);
   };
 
   const addSolarInstallerInformation = (pdf) => {
@@ -560,13 +560,13 @@ export default function RaiseInverterTicketPage() {
       addHeader(pdf);
       addFooter(pdf, currPage, totalPages);
     }
-    pdf.save("inverter-ticket.pdf");
-    // const pdfBlob = await uploadPdf({
-    //   pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
-    //   pdf,
-    // });
-    // setIsGeneratingPdf(false);
-    // setPdfUrl(pdfBlob.url);
+    // pdf.save("inverter-ticket.pdf");
+    const pdfBlob = await uploadPdf({
+      pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+      pdf,
+    });
+    setIsGeneratingPdf(false);
+    setPdfUrl(pdfBlob.url);
   };
 
   const getSinglePhaseForm = () => {
@@ -1096,7 +1096,7 @@ export default function RaiseInverterTicketPage() {
   };
 
   return (
-    <div className="bg-[#efd9b4] mt-20 md:mt-0">
+    <div className="mt-20 md:mt-0">
       {(verifyingUser || isQuestionLoading) && (
         <div className="flex justify-center items-center h-full">
           <BounceLoader color={spinnerColor} />
@@ -1179,10 +1179,11 @@ export default function RaiseInverterTicketPage() {
             </div>
           )}
           {pdfUrl && (
-            <InverterTicketDetails
-              pdfUrl={pdfUrl}
+            <GeneratedTicketDetails
               customerDetail={customerDetail}
+              pdfUrl={pdfUrl}
               contractorDetail={isVerified}
+              tikcetType="Panel"
             />
           )}
         </>

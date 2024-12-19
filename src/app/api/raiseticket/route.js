@@ -7,6 +7,7 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const {
+      ticketName,
       contractorName,
       contactorComapny,
       contractorEmail,
@@ -16,21 +17,31 @@ export async function POST(request) {
       customerPhone,
       customerAddress,
       customerCapacity,
+      customerPincode,
       installedPanelCompany,
       installedInverterCompany,
       installedPanelModel,
       installedInverterModel,
       pdfUrl,
       ticketStatus,
-      ticketCreatedDate,
+      ticketCreationDate,
       ticketEmailContent,
+      sollarInstallerServicePerson,
+      sollarInstallerServicePersonPhone,
     } = body;
-    // console.log(customerName, customerEmail, customerPhone, customerAddress);
-    // console.log(installedPanelCompany, installedPanelModel);
-    // console.log(installedInverterCompany, installedInverterModel);
-    // console.log(pdfUrl);
-    // console.log(ticketStatus, ticketCreatedDate, ticketEmailContent);
+    const isTicketExist = await Ticket.findOne({ ticketName });
+    if (isTicketExist) {
+      return NextResponse.json(
+        {
+          message: "Ticket with same name alreasy exisit",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
     const ticket = new Ticket({
+      ticketName,
       contractorName,
       contactorComapny,
       contractorEmail,
@@ -40,12 +51,17 @@ export async function POST(request) {
       customerPhone,
       customerAddress,
       customerCapacity,
+      customerPincode,
+      installedPanelCompany,
       installedInverterCompany,
+      installedPanelModel,
       installedInverterModel,
       pdfUrl,
       ticketStatus,
-      ticketCreatedDate,
+      ticketCreationDate,
       ticketEmailContent,
+      sollarInstallerServicePerson,
+      sollarInstallerServicePersonPhone,
     });
     await ticket.save();
     return NextResponse.json({ ticket });

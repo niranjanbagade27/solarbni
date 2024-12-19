@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { Button, Table } from "reactstrap";
+import { Button } from "reactstrap";
 export function GeneratedTicketDetails({
   pdfUrl,
   customerDetail = {
@@ -31,6 +31,8 @@ export function GeneratedTicketDetails({
   contractorDetail,
   ticketType = "Panel",
 }) {
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
+
   const ticketName = useRef(
     `SOLARBNI_${ticketType}_${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`
   );
@@ -39,63 +41,83 @@ export function GeneratedTicketDetails({
       ticketType === "Panel"
         ? customerDetail.custInstalledPanelCompany
         : customerDetail.custInstalledInverterCompany
-    } representative,,
+    } representative,
 
 We require service support with ${
       ticketType === "Panel"
         ? customerDetail.custInstalledPanelModel
         : customerDetail.custInstalledInverterModel
-    } installed at ${customerDetail.custAddress} with ${
+    } panel installed at ${customerDetail.custAddress} with plant capacity ${
       customerDetail.custSysCapacity
     }kW. 
 This report has been generated to provide you all necessary parameters required for site assessment.
 
-Please find the attached PDF for more information.
+PDF with all details : ${pdfUrl}
 
-Thank you,
-${contractorDetail.fullName}
-${contractorDetail.company}
-`;
+Looking forward to your positive feedback.
+
+Thanks, and regards,
+  ${customerDetail.custName}
+  ${customerDetail.custPhone}
+
+Project installed by,
+  ${contractorDetail.fullName}
+  ${contractorDetail.companyName}
+  Service person : ${customerDetail.sollarInstallerServicePerson}
+  Service person contact number : ${
+    customerDetail.sollarInstallerServicePersonPhone
+  }
+  `;
+  };
+  const fetchData = async () => {
+    try {
+      const response = await axios.post(`/api/raiseticket`, {
+        ticketName: ticketName.current,
+        contractorName: contractorDetail.fullName,
+        contactorComapny: contractorDetail.companyName,
+        contractorEmail: contractorDetail.email,
+        ticketType,
+        customerName: customerDetail.custName,
+        customerEmail: customerDetail.custEmail,
+        customerPhone: customerDetail.custPhone,
+        customerAddress: customerDetail.custAddress,
+        customerCapacity: customerDetail.custSysCapacity,
+        customerPincode: customerDetail.custPincode,
+        installedInverterCompany: customerDetail.custInstalledInverterCompany,
+        installedInverterModel: customerDetail.custInstalledInverterModel,
+        installedPanelCompany: customerDetail.custInstalledPanelCompany,
+        installedPanelModel: customerDetail.custInstalledPanelModel,
+        pdfUrl: pdfUrl,
+        ticketStatus: "open",
+        ticketCreationDate: new Date().toISOString(),
+        ticketEmailContent: getTicketEmailContent(),
+        sollarInstallerServicePerson:
+          customerDetail.sollarInstallerServicePerson,
+        sollarInstallerServicePersonPhone:
+          customerDetail.sollarInstallerServicePersonPhone,
+      });
+      toast("Ticket Saved to DB");
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      toast("Error while saving ticket. Check logs");
+    }
   };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post(`/api/raiseticket`, {
-          ticketName: ticketName.current,
-          contractorName: contractorDetail.fullName,
-          contactorComapny: contractorDetail.company,
-          contractorEmail: contractorDetail.email,
-          ticketType,
-          customerName: customerDetail.custName,
-          customerEmail: customerDetail.custEmail,
-          customerPhone: customerDetail.custPhone,
-          customerAddress: customerDetail.custAddress,
-          customerCapacity: customerDetail.custSysCapacity,
-          customerPincode: customerDetail.custPincode,
-          installedInverterCompany: customerDetail.custInstalledInverterCompany,
-          installedInverterModel: customerDetail.custInstalledInverterModel,
-          installedPanelCompany: customerDetail.custInstalledPanelCompany,
-          installedPanelModel: customerDetail.custInstalledPanelModel,
-          pdfUrl: pdfUrl,
-          ticketStatus: "open",
-          ticketCreatedDate: new Date().toISOString(),
-          ticketEmailContent: getTicketEmailContent(),
-          sollarInstallerServicePerson:
-            customerDetail.sollarInstallerServicePerson,
-          sollarInstallerServicePersonPhone:
-            customerDetail.sollarInstallerServicePersonPhone,
-        });
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    // fetchData();
+    fetchData();
   }, []);
 
   const copyToClipboard = (content) => {
     navigator.clipboard.writeText(content);
     toast.success("Content copied to clipboard");
+  };
+
+  const copyClipBoardBtn = (data) => {
+    return (
+      <Button size="sm" color="success" onClick={() => copyToClipboard(data)}>
+        Click to copy
+      </Button>
+    );
   };
 
   return (
@@ -108,63 +130,83 @@ ${contractorDetail.company}
         Note : Please copy the email content below and confirm after it is done.
       </div>
       <br></br>
-      <div className="w-full grid grid-cols-2 gap-4">
-        <div className="font-semibold">Ticket ID</div>
-        <div className="flex flex-col gap-3">
-          <div className="w-[100%]">{ticketName.current}</div>
-          <div>
-            <Button
-              size="sm"
-              color="success"
-              onClick={() => copyToClipboard(ticketName.current)}
-            >
-              Click to copy{" "}
-            </Button>
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-row gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw]">Ticket ID</div>
+          <div className="w-[70vw]">{ticketName.current}</div>
+          <div className="flex justify-end w-[20vw]">
+            {copyClipBoardBtn(ticketName.current)}
           </div>
         </div>
-        <div className="font-semibold">Email Subject</div>
-        <div className="flex flex-col gap-3">
-          <div className="w-[100%] break-words">
+        <div className="flex flex-row gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw]">Email Subject</div>
+          <div className="w-[70vw]">
             Subject: Request for service support for Solar PV system
           </div>
-          <div>
-            <Button
-              size="sm"
-              color="success"
-              onClick={() =>
-                copyToClipboard(
-                  `Subject: Request for service support for Solar PV system`
-                )
-              }
-            >
-              Click to copy{" "}
-            </Button>
+          <div className="flex justify-end w-[20vw]">
+            {copyClipBoardBtn(
+              "Subject: Request for service support for Solar PV system"
+            )}
           </div>
         </div>
-        <div className="font-semibold">Email Content</div>
-        <div>
-          <pre>{getTicketEmailContent()}</pre>
-          <div>
-            <Button
-              size="sm"
-              color="success"
-              onClick={() => copyToClipboard(getTicketEmailContent())}
-            >
-              {" "}
-              Click to copy{" "}
-            </Button>
+        <div className="flex flex-row gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw]">Email Content</div>
+          <div className="w-[70vw]">
+            <pre>{getTicketEmailContent()}</pre>
+          </div>
+          <div className="flex justify-end w-[20vw]">
+            {copyClipBoardBtn(getTicketEmailContent())}
+          </div>
+        </div>
+        <div className="flex flex-row gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw]">PDF Url</div>
+          <div className="w-[70vw]">
+            <pre>{pdfUrl}</pre>
+          </div>
+          <div className="flex justify-end w-[20vw]">
+            {copyClipBoardBtn(pdfUrl)}
+          </div>
+        </div>
+        <div className="flex flex-row gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw]">PDF Preview</div>
+          <div className={`w-[70vw]`}>
+            {!showPdfPreview && (
+              <Button
+                size="sm"
+                color="success"
+                onClick={() => setShowPdfPreview(!showPdfPreview)}
+              >
+                Preview
+              </Button>
+            )}
+            {showPdfPreview && (
+              <div className="h-[60vh]">
+                <iframe src={pdfUrl} width="100%" height="100%" />
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end w-[20vw]">
+            {showPdfPreview && (
+              <Button
+                size="sm"
+                color="success"
+                onClick={() => setShowPdfPreview(!showPdfPreview)}
+              >
+                CLose Preview
+              </Button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* <div className="h-[70vh]">
-        <iframe
-          src={pdfUrl}
-          width="100%"
-          height="100%"
-          title="Inverter Ticket"
-        />
-      </div> */}
+      <div className="mt-16 italic font-semibold">
+        <Button
+          size="sm"
+          color="success"
+          onClick={() => (window.location.href = "/ticket/raise")}
+        >
+          All done, Raise anaother ticket ?
+        </Button>
+      </div>
     </div>
   );
 }
