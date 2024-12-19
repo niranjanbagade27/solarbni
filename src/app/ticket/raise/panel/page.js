@@ -21,7 +21,7 @@ import sanatizeHtml from "sanitize-html";
 import { jsPDF } from "jspdf";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
-import { uploadPdf } from "@/util/uploadPdf";
+import uploadPdf from "@/util/uploadPdf";
 import { GeneratedTicketDetails } from "@/components/GeneratedTicketDetails/GeneratedTicketDetails";
 
 export default function RaisePanelTicketPage() {
@@ -101,7 +101,6 @@ export default function RaisePanelTicketPage() {
     "Other",
   ]);
   const [pdfUrl, setPdfUrl] = useState();
-  // "https://uhzwchr2w8givz2o.public.blob.vercel-storage.com/inverter_ticket-wGqLNYlu0QmxNOXXmHpyIbdzQNEDAD"
 
   useEffect(() => {
     const fetchData = async () => {
@@ -570,26 +569,22 @@ export default function RaisePanelTicketPage() {
       addHeader(pdf);
       addFooter(pdf, currPage, totalPages);
     }
-    pdf.save("panel-ticket.pdf");
-    // const pdfBlob = await uploadPdf({
-    //   pdfFileName: `${customerDetail.custInstalledPanelCompany}_${customerDetail.custInstalledPanelModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
-    //   pdf,
-    // });
-    // setIsGeneratingPdf(false);
-    // setPdfUrl(pdfBlob.url);
+    // pdf.save("panel-ticket.pdf");
+    const pdfBlob = await uploadPdf({
+      pdfFileName: `${customerDetail.custInstalledPanelCompany}_${customerDetail.custInstalledPanelModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+      pdf,
+    });
+    setIsGeneratingPdf(false);
+    setPdfUrl(pdfBlob.url);
   };
 
   const handleSubmitPanelTicket = () => {
+    setIsGeneratingPdf(true);
     generatePdf();
-    // setIsGeneratingPdf(true);
-    // setTimeout(() => {
-    //   setIsGeneratingPdf(false);
-    // }, 5000);
-    // console.log(panelAnswers);
   };
 
   return (
-    <div className="bg-[#efd9b4] mt-20 md:mt-0">
+    <div className="mt-20 md:mt-0">
       {!pdfUrl && (
         <>
           {(verifyingUser || isQuestionLoading) && (
@@ -753,7 +748,7 @@ export default function RaisePanelTicketPage() {
       )}
       {pdfUrl && (
         <GeneratedTicketDetails
-          // customerDetail={customerDetail}
+          customerDetail={customerDetail}
           pdfUrl={pdfUrl}
           contractorDetail={isVerified}
           tikcetType="Panel"
