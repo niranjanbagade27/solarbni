@@ -21,7 +21,7 @@ import sanatizeHtml from "sanitize-html";
 import { jsPDF } from "jspdf";
 import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
-import { uploadPdf } from "@/util/uploadPdf";
+import { uploadPdf } from "@/util/uploadPdfAxios";
 import { GeneratedTicketDetails } from "@/components/GeneratedTicketDetails/GeneratedTicketDetails";
 
 export default function RaisePanelTicketPage() {

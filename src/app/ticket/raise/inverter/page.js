@@ -23,7 +23,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import { threePhaseQuestions } from "@/constants/threePhaseQuestions";
 import { singlePhaseQuestions } from "@/constants/singlePhaseQuestions";
-import uploadPdf from "@/util/uploadPdf";
+import uploadPdf from "@/util/uploadPdfAxios";
 import { InverterTicketDetails } from "@/components/InverterTicketDetails/InverterTicketDetails";
 
 export default function RaiseInverterTicketPage() {
