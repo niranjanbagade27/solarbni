@@ -32,3 +32,31 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET(request) {
+  try {
+    await dbConnect();
+    const ticketData = await Ticket.find();
+    if (ticketData) {
+      return NextResponse.json({ ticketData });
+    } else {
+      return NextResponse.json(
+        {
+          message: "No ticket raised yet",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+  } catch (e) {
+    return NextResponse.json(
+      {
+        message: "Error while fetching ticket details",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

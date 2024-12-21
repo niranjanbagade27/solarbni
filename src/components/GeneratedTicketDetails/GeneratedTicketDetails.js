@@ -130,46 +130,50 @@ Project installed by,
         Note : Please copy the email content below and confirm after it is done.
       </div>
       <br></br>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-row gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw]">Ticket ID</div>
-          <div className="w-[70vw]">{ticketName.current}</div>
-          <div className="flex justify-end w-[20vw]">
+      <div className="flex flex-col sm:gap-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw] text-2xl text-2xl">Ticket ID</div>
+          <div className="sm:w-[70vw]">{ticketName.current}</div>
+          <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(ticketName.current)}
           </div>
         </div>
-        <div className="flex flex-row gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw]">Email Subject</div>
-          <div className="w-[70vw]">
+        <hr></hr>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw] text-2xl">Email Subject</div>
+          <div className="sm:w-[70vw] w-[95%]">
             Subject: Request for service support for Solar PV system
           </div>
-          <div className="flex justify-end w-[20vw]">
+          <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(
               "Subject: Request for service support for Solar PV system"
             )}
           </div>
         </div>
-        <div className="flex flex-row gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw]">Email Content</div>
-          <div className="w-[70vw]">
+        <hr></hr>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw] text-2xl">Email Content</div>
+          <div className="sm:w-[70vw] w-[95%]">
             <pre>{getTicketEmailContent()}</pre>
           </div>
-          <div className="flex justify-end w-[20vw]">
+          <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(getTicketEmailContent())}
           </div>
         </div>
-        <div className="flex flex-row gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw]">PDF Url</div>
-          <div className="w-[70vw]">
+        <hr></hr>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw] text-2xl">PDF Url</div>
+          <div className="sm:w-[70vw] w-[95%]">
             <pre>{pdfUrl}</pre>
           </div>
-          <div className="flex justify-end w-[20vw]">
+          <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(pdfUrl)}
           </div>
         </div>
-        <div className="flex flex-row gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw]">PDF Preview</div>
-          <div className={`w-[70vw]`}>
+        <hr></hr>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
+          <div className="font-semibold min-w-[10vw] text-2xl">PDF Preview</div>
+          <div className={`sm:w-[70vw] w-[95%]`}>
             {!showPdfPreview && (
               <Button
                 size="sm"
@@ -185,7 +189,7 @@ Project installed by,
               </div>
             )}
           </div>
-          <div className="flex justify-end w-[20vw]">
+          <div className="flex justify-end sm:w-[20vw]">
             {showPdfPreview && (
               <Button
                 size="sm"

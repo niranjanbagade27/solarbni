@@ -569,7 +569,7 @@ export default function RaisePanelTicketPage() {
       addHeader(pdf);
       addFooter(pdf, currPage, totalPages);
     }
-    // pdf.save("panel-ticket.pdf");
+    pdf.save("panel-ticket.pdf");
     const pdfBlob = await uploadPdf({
       pdfFileName: `${customerDetail.custInstalledPanelCompany}_${customerDetail.custInstalledPanelModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
       pdf,
