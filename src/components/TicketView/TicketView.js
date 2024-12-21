@@ -51,6 +51,32 @@ export default function TicketView({ ticketName }) {
       </Button>
     );
   };
+
+  const exportTicketData = (data) => {
+    const excludedKeys = ["ticketEmailContent", "_v"]; // Add keys to exclude
+    const headers = Object.keys(data[0])
+      .filter((key) => !excludedKeys.includes(key))
+      .join(",");
+    const csvContent = [
+      headers,
+      ...data.map((ticket) => {
+        return Object.keys(ticket)
+          .filter((key) => !excludedKeys.includes(key))
+          .map((key) => ticket[key])
+          .join(",");
+      }),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "tickets.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="mt-24 sm:mt-6">
       {(isLoading || verifyingUser) && (
@@ -203,17 +229,22 @@ export default function TicketView({ ticketName }) {
                 )}
               </div>
             </div>
-            {/* <div className="flex flex-row gap-10 justify-start items-start w-full">
-              <div className="font-semibold min-w-[10vw]">PDF Url</div>
-              <div className="w-[70vw]">
-                <pre>{ticketData.pdfUrl}</pre>
+            <hr></hr>
+            <div className="flex flex-col gap-3 sm:gap-10 justify-start items-start w-full">
+              <div className="font-semibold min-w-[10vw] text-2xl">
+                Export Ticket Data
               </div>
-              <div className="flex justify-end sm:justify-start w-[20vw]">
-                {copyClipBoardBtn(ticketData.pdfUrl)}
+              <div className="flex justify-end sm:justify-start sm:w-[20vw]">
+                <Button
+                  size="sm"
+                  color="success"
+                  onClick={() => exportTicketData(ticketData)}
+                >
+                  Export to CSV
+                </Button>
               </div>
-            </div> */}
+            </div>
           </div>
-          <div className="mt-16 italic font-semibold"></div>
         </>
       )}
     </div>
