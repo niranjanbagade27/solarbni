@@ -1183,7 +1183,7 @@ export default function RaiseInverterTicketPage() {
               customerDetail={customerDetail}
               pdfUrl={pdfUrl}
               contractorDetail={isVerified}
-              tikcetType="Panel"
+              tikcetType="Inverter"
             />
           )}
         </>

@@ -4,4 +4,5 @@ export const adminProfileTabs = {
   INVERTER: "Inverter Questions",
   OEM: "Update OEM",
   CONTRACTOR: "Update Contractor",
+  EXPORT: "Export Data",
 };
