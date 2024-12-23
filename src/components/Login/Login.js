@@ -20,6 +20,7 @@ export default function LoginComponent() {
         `${process.env.NEXT_PUBLIC_VERCEL_BASE_PATH}/api/login`,
         loginData
       );
+      localStorage.setItem("isLoggedIn", "true");
       toast("Login Successful");
       setIsLoading(false);
       if (

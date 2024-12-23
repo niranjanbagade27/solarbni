@@ -91,6 +91,18 @@ const ticketSchema = new Schema({
   sollarInstallerServicePersonPhone: {
     type: String,
   },
+  questions: [
+    {
+      question: {
+        type: String,
+        required: true,
+      },
+      answer: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 const Ticket = mongoose.models.Ticket || mongoose.model("Ticket", ticketSchema);

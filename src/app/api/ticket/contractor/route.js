@@ -7,8 +7,9 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const { contractorEmail } = body;
-    console.log(contractorEmail);
-    const ticketData = await Ticket.find({ contractorEmail });
+    const ticketData = await Ticket.find({ contractorEmail }).sort({
+      ticketCreationDate: -1,
+    });
     if (ticketData) {
       return NextResponse.json({ ticketData });
     } else {

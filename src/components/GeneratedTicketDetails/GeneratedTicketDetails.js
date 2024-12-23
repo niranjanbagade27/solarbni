@@ -5,36 +5,20 @@ import { toast } from "react-toastify";
 import { Button } from "reactstrap";
 export function GeneratedTicketDetails({
   pdfUrl,
-  customerDetail = {
-    custName: "Test Customer",
-    custEmail: "abc@gmail.com",
-    custPhone: "1234567890",
-    custAddress: "Test Address",
-    custSysCapacity: "5KW",
-    custInstalledPanelCompany: "Test Panel Company",
-    custInstalledPanelModel: "Test Panel Model",
-    custInstalledPanelCapacity: "5KW",
-    custInstalledInverterCompany: "Test Inverter Company",
-    custInstalledInverterModel: "Test Inverter Model",
-    sollarInstallerServicePerson: "ABC",
-    sollarInstallerServicePersonPhone: "1234567890",
-    custSysAge: "5 years",
-    custInverterCapacity: "5KW",
-    custThreeOrSinglePhase: "Single Phase",
-    custInstalledInverterSingleOrThreePhase: "Single Phase",
-    custPanelType: "Test Panel Type",
-    custDcrOrNonDcr: "DCR",
-    custPanelWattage: "5KW",
-    custRemoteMonitoringUserId: "Test User",
-    custRemoteMonitoringPassword: "Test Password",
-  },
+  customerDetail,
   contractorDetail,
-  ticketType = "Panel",
+  ticketType,
+  questionArray,
 }) {
+  useEffect(() => {
+    console.log(questionArray);
+  }, []);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   const ticketName = useRef(
-    `SOLARBNI_${ticketType}_${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`
+    `SOLARBNI_${ticketType}_${
+      customerDetail.custSysCapacity
+    }_${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`
   );
   const getTicketEmailContent = () => {
     return `Respected ${
@@ -47,22 +31,20 @@ We require service support with ${
       ticketType === "Panel"
         ? customerDetail.custInstalledPanelModel
         : customerDetail.custInstalledInverterModel
-    } panel installed at ${customerDetail.custAddress} with plant capacity ${
-      customerDetail.custSysCapacity
-    }kW. 
+    } panel installed at ${customerDetail.custAddress}, ${
+      customerDetail.custPincode
+    } with plant capacity ${customerDetail.custSysCapacity}kW. 
 This report has been generated to provide you all necessary parameters required for site assessment.
-
-PDF with all details : ${pdfUrl}
 
 Looking forward to your positive feedback.
 
 Thanks, and regards,
-  ${customerDetail.custName}
-  ${customerDetail.custPhone}
+  Customer Name : ${customerDetail.custName}
+  Customer Phone : ${customerDetail.custPhone}
 
 Project installed by,
-  ${contractorDetail.fullName}
-  ${contractorDetail.companyName}
+  Contractor Name : ${contractorDetail.fullName}
+  Contractor Company : ${contractorDetail.companyName}
   Service person : ${customerDetail.sollarInstallerServicePerson}
   Service person contact number : ${
     customerDetail.sollarInstallerServicePersonPhone
@@ -95,6 +77,7 @@ Project installed by,
           customerDetail.sollarInstallerServicePerson,
         sollarInstallerServicePersonPhone:
           customerDetail.sollarInstallerServicePersonPhone,
+        questions: questionArray,
       });
       toast("Ticket Saved to DB");
       console.log(response.data);
@@ -132,7 +115,7 @@ Project installed by,
       <br></br>
       <div className="flex flex-col sm:gap-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw] text-2xl text-2xl">Ticket ID</div>
+          <div className="font-semibold min-w-[10vw] text-2xl">Ticket ID</div>
           <div className="sm:w-[70vw]">{ticketName.current}</div>
           <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(ticketName.current)}
@@ -140,9 +123,15 @@ Project installed by,
         </div>
         <hr></hr>
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw] text-2xl">Email Subject</div>
+          <div className="font-semibold min-w-[10vw] text-2xl">
+            Email Subject
+          </div>
           <div className="sm:w-[70vw] w-[95%]">
-            Subject: Request for service support for Solar PV system
+            {`Subject: Request for service support for ${
+              customerDetail.custSysCapacity
+            }kW Solar PV system installed at ${customerDetail.custPincode} : ${
+              ticketType === "Panel" ? "Panel" : "Inverter"
+            }`}
           </div>
           <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(
@@ -152,7 +141,13 @@ Project installed by,
         </div>
         <hr></hr>
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
-          <div className="font-semibold min-w-[10vw] text-2xl">Email Content</div>
+          <div className="font-semibold min-w-[10vw] text-2xl">
+            Email Content
+          </div>
+          <div className="font-medium text-lg italic text-rose-600">
+            Please add solarbni@gmail.com in CC while raising a ticket to the
+            manufacturer for efficient communication.
+          </div>
           <div className="sm:w-[70vw] w-[95%]">
             <pre>{getTicketEmailContent()}</pre>
           </div>

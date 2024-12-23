@@ -6,6 +6,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import { Button } from "reactstrap";
 import useVerifyUser from "@/hooks/verifyUser";
+import { userRoles } from "@/constants/role";
 
 export default function TicketView({ ticketName }) {
   const [errorMsg, setErrorMsg] = useState(null);
@@ -19,9 +20,18 @@ export default function TicketView({ ticketName }) {
       } = await axios.post("/api/ticket", {
         ticketName,
       });
-      setErrorMsg(null);
-      setIsLoading(false);
-      setTicketData(ticketData);
+      if (
+        ticketData.contractorEmail === isVerified.email ||
+        isVerified.role === userRoles.ADMIN
+      ) {
+        setErrorMsg(null);
+        setIsLoading(false);
+        setTicketData(ticketData);
+      } else {
+        setTicketData(null);
+        setErrorMsg("You are not authorized to view this ticket");
+        setIsLoading(false);
+      }
     } catch (err) {
       setTicketData(null);
       console.log(err);
