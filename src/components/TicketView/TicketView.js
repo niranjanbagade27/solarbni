@@ -63,16 +63,28 @@ export default function TicketView({ ticketName }) {
   };
 
   const exportTicketData = (data) => {
-    const excludedKeys = ["ticketEmailContent", "_v"]; // Add keys to exclude
-    const headers = Object.keys(data[0])
+    const excludedKeys = ["ticketEmailContent", "__v"]; // Add keys to exclude
+    const headers = Object.keys(data)
       .filter((key) => !excludedKeys.includes(key))
+      .map((key) => {
+        console.log(Array.isArray(data[key]));
+        if (Array.isArray(data[key])) {
+          return data[key].map((_, index) => `"${_.question}"`).join(",");
+        }
+        return key;
+      })
       .join(",");
     const csvContent = [
       headers,
-      ...data.map((ticket) => {
+      ...[data].map((ticket) => {
         return Object.keys(ticket)
           .filter((key) => !excludedKeys.includes(key))
-          .map((key) => ticket[key])
+          .map((key) => {
+            if (Array.isArray(ticket[key])) {
+              return ticket[key].map((item) => `${item.answer}`).join(",");
+            }
+            return ticket[key];
+          })
           .join(",");
       }),
     ].join("\n");
@@ -81,7 +93,7 @@ export default function TicketView({ ticketName }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "tickets.csv");
+    link.setAttribute("download", `ticket_${ticketData.ticketName}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
