@@ -72,7 +72,7 @@ const Navbar = () => {
                   href="/ticket/raise"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline"
                 >
-                  Tickets
+                  Raise Ticket
                 </a>
                 <a
                   href="#"
@@ -80,6 +80,14 @@ const Navbar = () => {
                 >
                   Contact
                 </a>
+                {isVerified && (
+                  <a
+                    href="/ticket/view"
+                    className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline"
+                  >
+                    View Ticket
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -110,6 +118,7 @@ const Navbar = () => {
                   onClick={async () => {
                     await axios.get("/api/logout");
                     toast("Logout Successful");
+                    localStorage.removeItem("isLoggedIn");
                     setTimeout(() => {
                       window.location.href = "/";
                     }, 2000);
@@ -135,7 +144,7 @@ const Navbar = () => {
               href="/ticket/raise"
               className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
             >
-              Tickets
+              Raise Ticket
             </a>
             <a
               href="#"
@@ -143,6 +152,14 @@ const Navbar = () => {
             >
               Contact
             </a>
+            {isVerified && (
+              <a
+                href="/ticket/view"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium no-underline"
+              >
+                View Ticket
+              </a>
+            )}
           </div>
         </div>
       )}

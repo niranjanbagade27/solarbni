@@ -571,7 +571,11 @@ export default function RaisePanelTicketPage() {
     }
     pdf.save("panel-ticket.pdf");
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledPanelCompany}_${customerDetail.custInstalledPanelModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+      pdfFileName: `${customerDetail.custInstalledPanelCompany}_${
+        customerDetail.custInstalledPanelModel
+      }_${customerDetail.custName.split(" ").join("_")}_${
+        customerDetail.custSysCapacity
+      }`,
       pdf,
     });
     setIsGeneratingPdf(false);
@@ -580,7 +584,22 @@ export default function RaisePanelTicketPage() {
 
   const handleSubmitPanelTicket = () => {
     setIsGeneratingPdf(true);
-    generatePdf();
+    // generatePdf();
+  };
+
+  const generateQuestionArray = () => {
+    const questions = [];
+    Object.keys(panelAnswers).forEach((key) => {
+      if (panelAnswers[key].answer) {
+        questions.push({
+          question: `${panelAnswers[key].question} - panel ${
+            key.split("-")[0]
+          }`,
+          answer: panelAnswers[key].answer,
+        });
+      }
+    });
+    return questions;
   };
 
   return (
@@ -751,6 +770,7 @@ export default function RaisePanelTicketPage() {
           customerDetail={customerDetail}
           pdfUrl={pdfUrl}
           contractorDetail={isVerified}
+          questionArray={generateQuestionArray()}
           tikcetType="Panel"
         />
       )}

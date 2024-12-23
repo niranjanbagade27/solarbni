@@ -6,7 +6,7 @@ import BounceLoader from "react-spinners/BounceLoader";
 import { spinnerColor } from "@/constants/colors";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Button } from "reactstrap";
+import { Button, Table } from "reactstrap";
 
 export default function ContractorProfilePage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
@@ -68,7 +68,10 @@ export default function ContractorProfilePage() {
           <div className="text-3xl">Hi, {isVerified.fullName}</div>
           <div className="text-lg">
             Your Raised Tickets{" "}
-            {ticketData.length > 0 ? `( ${ticketData.length} )` : ""}:{" "}
+            {ticketData && ticketData.length > 0
+              ? `( ${ticketData.length} )`
+              : ""}
+            :{" "}
           </div>
           {isLoading && (
             <div className="flex justify-center items-center h-full">
@@ -76,32 +79,72 @@ export default function ContractorProfilePage() {
             </div>
           )}
           {!isLoading && !errorMsg && ticketData && (
-            <div>
-              {ticketData.map((ticket, index) => (
-                <div key={index}>
-                  <div className="flex flex-col gap-2">
-                    <div className="font-medium text-lg">
-                      {ticket.ticketName}
+            <>
+              <div className="w-full sm:hidden">
+                {ticketData.map((ticket, index) => (
+                  <div key={index}>
+                    <div className="flex flex-col sm:flex-row sm:justify-start sm:items-center gap-2">
+                      <div className="font-medium text-lg">
+                        {index + 1} : {ticket.ticketName}
+                      </div>
+                      <div className="pl-6">
+                        Customer : {ticket.customerName}
+                      </div>
+                      <div className="pl-6">
+                        Date raised :{" "}
+                        {new Date(ticket.ticketCreationDate).toLocaleString()}
+                      </div>
+                      <div className="pl-6">
+                        <Button
+                          color="primary"
+                          onClick={() => {
+                            window.location.href = `/ticket/view/${ticket.ticketName}`;
+                          }}
+                        >
+                          View
+                        </Button>
+                      </div>
                     </div>
-                    <div className="pl-6">Customer : {ticket.customerName}</div>
-                    <div className="pl-6">
-                      Date raised : {ticket.ticketCreationDate}
-                    </div>
-                    <div className="pl-6">
-                      <Button
-                        color="primary"
-                        onClick={() => {
-                          window.location.href = `/ticket/view/${ticket.ticketName}`;
-                        }}
-                      >
-                        View
-                      </Button>
-                    </div>
+                    <hr></hr>
                   </div>
-                  <hr></hr>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+              <div className="hidden sm:flex sm:w-full">
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Ticket Name</th>
+                      <th>Customer</th>
+                      <th>Date Raised</th>
+                      <th>View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ticketData.map((ticket, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{ticket.ticketName}</td>
+                        <td>{ticket.customerName}</td>
+                        <td>
+                          {new Date(ticket.ticketCreationDate).toLocaleString()}
+                        </td>
+                        <td>
+                          <Button
+                            color="primary"
+                            onClick={() => {
+                              window.location.href = `/ticket/view/${ticket.ticketName}`;
+                            }}
+                          >
+                            View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            </>
           )}
           {errorMsg && <div className="font-bold text-4xl">{errorMsg}</div>}
         </div>

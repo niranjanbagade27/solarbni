@@ -7,8 +7,8 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const { ticketName } = body;
-    console.log("###", ticketName);
-    const ticketData = await Ticket.findOne({ ticketName });
+    const originalTicketName = ticketName.split("%20").join(" ");
+    const ticketData = await Ticket.findOne({ ticketName: originalTicketName });
     if (ticketData) {
       return NextResponse.json({ ticketData });
     } else {

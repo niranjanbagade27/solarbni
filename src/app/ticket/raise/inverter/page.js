@@ -1095,6 +1095,43 @@ export default function RaiseInverterTicketPage() {
     generatePdf();
   };
 
+  const generateQuestionArray = () => {
+    const questionArray = [];
+    if (
+      parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 1
+    ) {
+      Object.keys(singlePhaseAnswers).forEach((key) => {
+        if (singlePhaseAnswers[key]?.answer) {
+          questionArray.push({
+            question: singlePhaseAnswers[key].question,
+            answer: singlePhaseAnswers[key]?.answer,
+          });
+        }
+      });
+    }
+    if (
+      parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 3
+    ) {
+      Object.keys(threePhaseAnswers).forEach((key) => {
+        if (threePhaseAnswers[key]?.answer) {
+          questionArray.push({
+            question: threePhaseAnswers[key].question,
+            answer: threePhaseAnswers[key]?.answer,
+          });
+        }
+      });
+    }
+    Object.keys(inverterAnswers).forEach((key) => {
+      if (inverterAnswers[key]?.answer) {
+        questionArray.push({
+          question: inverterAnswers[key].question,
+          answer: inverterAnswers[key]?.answer,
+        });
+      }
+    });
+    return questionArray;
+  };
+
   return (
     <div className="mt-20 md:mt-0">
       {(verifyingUser || isQuestionLoading) && (
@@ -1183,7 +1220,8 @@ export default function RaiseInverterTicketPage() {
               customerDetail={customerDetail}
               pdfUrl={pdfUrl}
               contractorDetail={isVerified}
-              tikcetType="Inverter"
+              questionArray={generateQuestionArray()}
+              ticketType="Inverter"
             />
           )}
         </>

@@ -28,6 +28,7 @@ export async function POST(request) {
       ticketEmailContent,
       sollarInstallerServicePerson,
       sollarInstallerServicePersonPhone,
+      questions,
     } = body;
     const isTicketExist = await Ticket.findOne({ ticketName });
     if (isTicketExist) {
@@ -62,6 +63,7 @@ export async function POST(request) {
       ticketEmailContent,
       sollarInstallerServicePerson,
       sollarInstallerServicePersonPhone,
+      questions,
     });
     await ticket.save();
     return NextResponse.json({ ticket });
