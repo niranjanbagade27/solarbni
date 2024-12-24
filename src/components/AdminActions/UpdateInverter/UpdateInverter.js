@@ -470,7 +470,7 @@ export default function UpdateInverter() {
               <>
                 {questionType !== inverterQuestionType.DELETE && (
                   <Button
-                    color="primary"
+                    color="warning"
                     className="mt-4"
                     onClick={() => handleAddQuestion()}
                   >

@@ -99,7 +99,7 @@ export default function AdminExportPage({ loggedInUser }) {
         <div className="font-semibold text-lg">Export all tickets</div>
         <div>
           {!isLoadingAllExport && (
-            <Button color="primary" onClick={() => handleAllExport()}>
+            <Button color="warning" onClick={() => handleAllExport()}>
               Export
             </Button>
           )}
@@ -122,7 +122,7 @@ export default function AdminExportPage({ loggedInUser }) {
         </div>
         <div>
           {!isLoadingContractorEmail && (
-            <Button color="primary" onClick={() => handleContractorEmail()}>
+            <Button color="warning" onClick={() => handleContractorEmail()}>
               Export
             </Button>
           )}

@@ -96,7 +96,7 @@ export default function ContractorProfilePage() {
                       </div>
                       <div className="pl-6">
                         <Button
-                          color="primary"
+                          color="warning"
                           onClick={() => {
                             window.location.href = `/ticket/view/${ticket.ticketName}`;
                           }}
@@ -131,7 +131,7 @@ export default function ContractorProfilePage() {
                         </td>
                         <td>
                           <Button
-                            color="primary"
+                            color="warning"
                             onClick={() => {
                               window.location.href = `/ticket/view/${ticket.ticketName}`;
                             }}

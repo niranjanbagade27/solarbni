@@ -411,7 +411,7 @@ export default function UpdatePanel() {
               <>
                 {questionType !== panelQuestionType.DELETE && (
                   <Button
-                    color="primary"
+                    color="warning"
                     className="mt-4"
                     onClick={() => handleAddQuestion()}
                   >

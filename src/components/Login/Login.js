@@ -78,7 +78,7 @@ export default function LoginComponent() {
             <Label for="examplePassword">Password</Label>
           </FormGroup>{" "}
           {!isLoading && (
-            <Button color="primary" onClick={() => handleSubmit()}>
+            <Button color="warning" onClick={() => handleSubmit()}>
               Log In
             </Button>
           )}
