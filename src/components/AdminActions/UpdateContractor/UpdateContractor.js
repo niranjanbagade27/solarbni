@@ -620,7 +620,7 @@ export default function UpdateContractor() {
                 </Row>
                 {!isLoading && (
                   <Button
-                    color="primary"
+                    color="warning"
                     disabled={
                       Object.values(errors).some((error) => error !== "") ||
                       (newContractorData.password &&

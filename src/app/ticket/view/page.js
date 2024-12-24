@@ -48,7 +48,7 @@ export default function TicketPage() {
           <br></br>
           <Row>
             <Col md={12}>
-              <Button color="primary" onClick={handleSubmit}>
+              <Button color="warning" onClick={handleSubmit}>
                 Submit
               </Button>
             </Col>

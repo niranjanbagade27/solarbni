@@ -1185,7 +1185,7 @@ export default function RaiseInverterTicketPage() {
                 ))}
                 {!isGeneratingPdf && (
                   <Button
-                    color="primary"
+                    color="warning"
                     onClick={() => handleSubmitInverterTicket()}
                   >
                     Submit

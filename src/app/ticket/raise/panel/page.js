@@ -733,7 +733,7 @@ export default function RaisePanelTicketPage() {
                 ))}
                 {!isGeneratingPdf && (
                   <Button
-                    color="primary"
+                    color="warning"
                     onClick={() => handleSubmitPanelTicket()}
                   >
                     Submit
