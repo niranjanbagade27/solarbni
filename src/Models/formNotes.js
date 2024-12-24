@@ -4,13 +4,12 @@ const Schema = mongoose.Schema;
 
 const formNotesSchema = new Schema({
   notes: {
-    type: Array,
+    type: String,
     required: true,
   },
 });
 
-const FormNotesSchema =
-  mongoose.models.FormNotesSchema ||
-  mongoose.model("FormNotesSchema", formNotesSchema);
+const FormNotes =
+  mongoose.models.FormNotes || mongoose.model("FormNotes", formNotesSchema);
 
-module.exports = FormNotesSchema;
+module.exports = FormNotes;

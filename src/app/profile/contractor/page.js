@@ -90,6 +90,16 @@ export default function ContractorProfilePage() {
                       <div className="pl-6">
                         Customer : {ticket.customerName}
                       </div>
+                      <div className="pl-6">Issue : {ticket.ticketType}</div>
+                      <div className="pl-6">
+                        Manufacturer :{" "}
+                        {ticket.ticketType === "panel"
+                          ? ticket.installedPanelCompany
+                          : ticket.installedInverterCompany}
+                      </div>
+                      <div className="pl-6">
+                        System Capacity : {ticket.customerCapacity}
+                      </div>
                       <div className="pl-6">
                         Date raised :{" "}
                         {new Date(ticket.ticketCreationDate).toLocaleString()}
@@ -116,6 +126,9 @@ export default function ContractorProfilePage() {
                       <th>#</th>
                       <th>Ticket Name</th>
                       <th>Customer</th>
+                      <th>Ticket Type</th>
+                      <th>Manufacturer</th>
+                      <th>System Capacity</th>
                       <th>Date Raised</th>
                       <th>View</th>
                     </tr>
@@ -126,6 +139,13 @@ export default function ContractorProfilePage() {
                         <td>{index + 1}</td>
                         <td>{ticket.ticketName}</td>
                         <td>{ticket.customerName}</td>
+                        <td>{ticket.ticketType}</td>
+                        <td>
+                          {ticket.ticketType === "panel"
+                            ? ticket.installedPanelCompany
+                            : ticket.installedInverterCompany}
+                        </td>
+                        <td>{ticket.customerCapacity}</td>
                         <td>
                           {new Date(ticket.ticketCreationDate).toLocaleString()}
                         </td>

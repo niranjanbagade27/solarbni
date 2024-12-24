@@ -91,7 +91,7 @@ export default function Register() {
   };
 
   return (
-    <div className="h-[50%]">
+    <div className="h-[50%] sm:w-[120%]">
       {!contratorAdded && (
         <Form style={{ width: "100%" }}>
           <Row>
