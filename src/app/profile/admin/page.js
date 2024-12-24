@@ -11,10 +11,11 @@ import UpdateOEM from "@/components/AdminActions/UpdateOem/UpdateOem";
 import UpdateContractor from "@/components/AdminActions/UpdateContractor/UpdateContractor";
 import AdminProfile from "@/components/AdminActions/AdminProfile/AdminProfile";
 import AdminExportData from "@/components/AdminActions/AdminExportData/AdminExportData";
+import AdminFormNotesPage from "@/components/AdminActions/AdminFormNotes/AdminFormNotes";
 
 export default function AdminProfilePage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
-  const [currentTab, setCurrentTab] = useState(adminProfileTabs.PROFILE);
+  const [currentTab, setCurrentTab] = useState(adminProfileTabs.FORMNOTES);
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";
@@ -51,6 +52,8 @@ export default function AdminProfilePage() {
         return <UpdateContractor loggedInUser={isVerified} />;
       case adminProfileTabs.EXPORT:
         return <AdminExportData loggedInUser={isVerified} />;
+      case adminProfileTabs.FORMNOTES:
+        return <AdminFormNotesPage loggedInUser={isVerified} />;
       default:
         return <AdminProfile loggedInUser={isVerified} />;
     }
@@ -143,6 +146,19 @@ export default function AdminProfilePage() {
                   aria-current="page"
                 >
                   {adminProfileTabs.EXPORT}
+                </span>
+              </div>
+              <div onClick={() => setCurrentTab(adminProfileTabs.FORMNOTES)}>
+                <span
+                  href="#"
+                  className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                    currentTab === adminProfileTabs.FORMNOTES
+                      ? "text-white bg-blue-700 dark:bg-blue-600"
+                      : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                  } w-full h-[5vh]`}
+                  aria-current="page"
+                >
+                  {adminProfileTabs.FORMNOTES}
                 </span>
               </div>
             </div>

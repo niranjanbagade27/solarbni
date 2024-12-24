@@ -5,4 +5,5 @@ export const adminProfileTabs = {
   OEM: "Update OEM",
   CONTRACTOR: "Update Contractor",
   EXPORT: "Export Data",
+  FORMNOTES: "Form Notes",
 };

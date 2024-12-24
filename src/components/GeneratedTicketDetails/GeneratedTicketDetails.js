@@ -145,8 +145,8 @@ Project installed by,
             Email Content
           </div>
           <div className="font-medium text-lg italic text-rose-600">
-            Please add solarbni@gmail.com in CC while raising a ticket to the
-            manufacturer for efficient communication.
+            Please add infosolarbni@gmail.com in CC while raising a ticket to
+            the manufacturer for efficient communication.
           </div>
           <div className="sm:w-[70vw] w-[95%]">
             <pre>{getTicketEmailContent()}</pre>
