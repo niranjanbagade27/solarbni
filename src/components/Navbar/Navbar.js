@@ -59,7 +59,7 @@ const Navbar = () => {
               className="flex-shrink-0 text-black flex justify-center items-center font-bold cursor-pointer -ml-56 sm:-ml-0"
               onClick={() => (window.location.href = "/")}
             >
-              SOLAR BNI
+              SNS Portal
             </div>
             <div className="hidden sm:block sm:ml-6 flex flex-row">
               {getMenu(isVerified)}
@@ -68,18 +68,33 @@ const Navbar = () => {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 mt-20 sm:mt-0">
             {!isVerified && (
               <>
-                <button
-                  className="bg-gray-800 text-white px-3 py-2 rounded-md text-sm font-medium"
+                {/* <Button
+                  color="secondary"
+                  className="text-white px-3 py-2 rounded-md text-sm font-medium"
                   onClick={() => (window.location.href = "/login")}
                 >
                   Solar Installer log in
-                </button>
-                <button
-                  className="ml-4 bg-blue-500 text-white px-3 py-2 rounded-md text-sm font-medium"
+                </Button>
+                <Button
+                  color="warning"
+                  className="ml-4 text-black font-bold px-3 py-2 rounded-md"
                   onClick={() => (window.location.href = "/register")}
                 >
                   Solar Installer sign up
-                </button>
+                </Button> */}
+                <a
+                  href="/login"
+                  className="bg-gray-600 text-white hover:bg-gray-400 hover:text-white block px-3 py-2 mr-2 rounded-sm text-base font-medium no-underline"
+                >
+                  Solar Installer log in
+                </a>
+                <Button
+                  color="warning"
+                  className="text-black font-bold px-3 py-2 rounded-md"
+                  onClick={() => (window.location.href = "/register")}
+                >
+                  Solar Installer sign up
+                </Button>
               </>
             )}
             {isVerified && (
@@ -132,7 +147,7 @@ function getMenu(isVerified) {
       Raise Ticket
     </a>
     <a
-      href="#"
+      href="/contact"
       className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
     >
       Contact
