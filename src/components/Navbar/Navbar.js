@@ -114,9 +114,7 @@ const Navbar = () => {
                     }, 2000);
                   }}
                 >
-                  <span className="text-black font-bold">
-                    Logout
-                  </span>
+                  <span className="text-black font-bold">Logout</span>
                 </Button>
               </>
             )}
@@ -133,35 +131,36 @@ const Navbar = () => {
 };
 
 function getMenu(isVerified) {
-  return <div className="px-2 pt flex flex-row">
-    <a
-      href="/profile"
-      className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
-    >
-      Profile
-    </a>
-    <a
-      href="/ticket/raise"
-      className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
-    >
-      Raise Ticket
-    </a>
-    <a
-      href="/contact"
-      className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
-    >
-      Contact
-    </a>
-    {isVerified && (
+  return (
+    <div className="px-2 pt flex flex-col sm:flex-row mt-14 sm:mt-0">
       <a
-        href="/ticket/view"
-        className="text-black hover:bg-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium no-underline"
+        href="/profile"
+        className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
       >
-        View Ticket
+        Profile
       </a>
-    )}
-  </div>
-
+      <a
+        href="/ticket/raise"
+        className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
+      >
+        Raise Ticket
+      </a>
+      <a
+        href="/contact"
+        className="text-black hover:bg-gray-400 hover:text-white block px-3 py-2 rounded-md text-base font-medium no-underline"
+      >
+        Contact
+      </a>
+      {isVerified && (
+        <a
+          href="/ticket/view"
+          className="text-black hover:bg-gray-400 hover:text-white px-3 py-2 rounded-md text-base font-medium no-underline"
+        >
+          View Ticket
+        </a>
+      )}
+    </div>
+  );
 }
 
 export default Navbar;

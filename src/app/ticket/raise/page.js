@@ -44,16 +44,16 @@ export default function TicketRaisePage() {
   }
 
   return (
-    <div>
+    <div className="flex sm:-mt-4 mt-20 justify-center items-center">
       {verifyingUser && (
         <div className="flex justify-center items-center h-full">
           <BounceLoader color={spinnerColor} />
         </div>
       )}
       {!verifyingUser && isVerified._id && (
-        <div className="flex justify-center items-center h-[80vh] flex-col gap-16">
+        <div className="flex justify-center items-center flex-col mt-4 gap-10">
           <div className="text-3xl">Hi, {isVerified.fullName}</div>
-          <div className="flex flex-col sm:flex-row gap-20">
+          <div className="flex flex-col sm:flex-row gap-10 sm:gap-20">
             <div
               className="border-2 border-black p-12 rounded-lg cursor-pointer text-xl hover:bg-slate-200"
               onClick={() => (window.location.href = "/ticket/raise/inverter")}
@@ -68,7 +68,7 @@ export default function TicketRaisePage() {
             </div>
           </div>
           <div className="flex flex-col w-full gap-3">
-            <div className="text-2xl font-bold">Form Notes : </div>
+            <div className="text-2xl font-bold">Form Instructions : </div>
             <div className="flex flex-col gap-2">
               {isLoading && (
                 <div className="flex justify-center items-center">
@@ -81,7 +81,9 @@ export default function TicketRaisePage() {
                     key={index}
                     className="flex justify-between items-center p-2 w-full"
                   >
-                    <div>{note.notes}</div>
+                    <div>
+                      {index + 1} - {note.notes}
+                    </div>
                   </div>
                 ))}
             </div>
