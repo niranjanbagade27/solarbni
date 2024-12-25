@@ -15,7 +15,7 @@ import AdminFormNotesPage from "@/components/AdminActions/AdminFormNotes/AdminFo
 
 export default function AdminProfilePage() {
   const { isVerified, verifyingUser, error } = useVerifyUser();
-  const [currentTab, setCurrentTab] = useState(adminProfileTabs.FORMNOTES);
+  const [currentTab, setCurrentTab] = useState(adminProfileTabs.PANEL);
   useEffect(() => {
     if (!verifyingUser && isVerified === false) {
       window.location.href = "/login";

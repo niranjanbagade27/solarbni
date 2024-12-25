@@ -39,6 +39,8 @@ export default function UpdateInverter() {
   const [quesUniqueDropdownCount, setQuesUniqueDropdownCount] = useState([]);
 
   const [questionSection, setQuestionSection] = useState(1);
+  const [inverterQuestion, setInverterQuestion] = useState([]);
+  const [isQuestionLoading, setIsQuestionLoading] = useState(true);
 
   const handleAddQuestion = async () => {
     try {
@@ -68,6 +70,69 @@ export default function UpdateInverter() {
       });
       console.log("response", response);
       toast("Question Added successfully");
+      setIsLoading(false);
+    } catch (e) {
+      toast(e.response.data.message);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchInverterQuestions = async () => {
+    try {
+      setIsQuestionLoading(true);
+      const result = await axios.get("/api/inverterfaultquestions");
+      setInverterQuestion(result.data.questions);
+      setIsQuestionLoading(false);
+    } catch (e) {
+      toast(e.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchInverterQuestions();
+  }, []);
+
+  const handleUpdateQuestionSrNo = (id, value) => {
+    const newPanelQuestion = inverterQuestion.map((question) => {
+      if (question._id === id) {
+        return {
+          ...question,
+          srNo: sanatizeHtml(value),
+        };
+      }
+      return question;
+    });
+    setInverterQuestion(newPanelQuestion);
+  };
+
+  const handleUpdateQuestionSection = (id, value) => {
+    const newPanelQuestion = inverterQuestion.map((question) => {
+      if (question._id === id) {
+        return {
+          ...question,
+          questionSection: sanatizeHtml(value),
+        };
+      }
+      return question;
+    });
+    setInverterQuestion(newPanelQuestion);
+  };
+
+  const handleUpdateQuestion = async () => {
+    try {
+      setIsLoading(true);
+      const quesPayload = inverterQuestion.map((question) => {
+        return {
+          id: question._id,
+          srNo: question.srNo,
+          questionSection: question.questionSection,
+        };
+      });
+      const response = await axios.post("/api/inverterfaultquestions/update", {
+        questions: quesPayload,
+      });
+      toast("Questions Updated successfully");
+      fetchInverterQuestions();
       setIsLoading(false);
     } catch (e) {
       toast(e.response.data.message);
@@ -377,6 +442,53 @@ export default function UpdateInverter() {
             </Form>
           </div>
         );
+      case inverterQuestionType.REARRANGE:
+        return (
+          <div>
+            {!isQuestionLoading &&
+              inverterQuestion.map((question, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row justify-between sm:items-center items-start mt-4 gap-3 sm:gap-0"
+                >
+                  <div className="text-black text-lg">
+                    {question.question
+                      ? question.question
+                      : question.questionChild[0].question}
+                  </div>
+                  <div className="flex flex-row gap-2 sm:w-[40%] ">
+                    <div className="w-[50%]">
+                      Sr.No :{" "}
+                      <Input
+                        type="text"
+                        value={question.srNo}
+                        onChange={(e) =>
+                          handleUpdateQuestionSrNo(question._id, e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="w-[50%]">
+                      Section :{" "}
+                      <Input
+                        type="select"
+                        value={question.questionSection}
+                        onChange={(e) =>
+                          handleUpdateQuestionSection(
+                            question._id,
+                            e.target.value
+                          )
+                        }
+                      >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                      </Input>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            {isQuestionLoading && <BounceLoader color={spinnerColor} />}
+          </div>
+        );
       default:
         return null;
     }
@@ -447,6 +559,20 @@ export default function UpdateInverter() {
                 {inverterQuestionType.DROPDOWN}
               </span>
             </div>
+            <div
+              onClick={() => setQuestionType(inverterQuestionType.REARRANGE)}
+            >
+              <span
+                href="#"
+                className={`inline-flex items-center px-4 py-3 cursor-pointer rounded-lg ${
+                  questionType === inverterQuestionType.REARRANGE
+                    ? "text-white bg-blue-700 dark:bg-blue-600"
+                    : "hover:text-gray-900 bg-gray-50 hover:bg-gray-100 w-full dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
+                } w-full h-[5vh]`}
+              >
+                {inverterQuestionType.REARRANGE}
+              </span>
+            </div>
             <div onClick={() => setQuestionType(inverterQuestionType.DELETE)}>
               <span
                 href="#"
@@ -457,7 +583,7 @@ export default function UpdateInverter() {
             </div>
           </div>
         </div>
-        <div className="p-4 sm:p-6 -mt-12 sm:-mt-0 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full sm:min-h-[80vh]">
+        <div className="p-4 sm:p-6 mt-0 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full sm:min-h-[80vh] sm:mt-[-20%]">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 h-[5%]">
             {questionType}{" "}
             {questionType === inverterQuestionType.DELETE
@@ -468,15 +594,25 @@ export default function UpdateInverter() {
           <div>
             {!isLoading && (
               <>
-                {questionType !== inverterQuestionType.DELETE && (
+                {questionType === inverterQuestionType.REARRANGE && (
                   <Button
                     color="warning"
                     className="mt-4"
-                    onClick={() => handleAddQuestion()}
+                    onClick={() => handleUpdateQuestion()}
                   >
-                    Add Question
+                    Update and Refresh
                   </Button>
                 )}
+                {questionType !== inverterQuestionType.DELETE &&
+                  questionType !== inverterQuestionType.REARRANGE && (
+                    <Button
+                      color="warning"
+                      className="mt-4"
+                      onClick={() => handleAddQuestion()}
+                    >
+                      Add Question
+                    </Button>
+                  )}
                 {questionType === inverterQuestionType.DELETE && (
                   <div className="flex gap-5">
                     <Button

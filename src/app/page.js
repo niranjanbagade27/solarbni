@@ -12,7 +12,7 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="sm:w-[50%] p-6 flex flex-col h-[80vh] overflow-hidden -mt-12 sm:-mt-0">
+      <div className="sm:w-[50%] p-6 flex flex-col overflow-hidden -mt-16 sm:-mt-0">
         <div className="font-bold text-5xl mt-12">
           Welcome to Solar National Service Portal…
         </div>
