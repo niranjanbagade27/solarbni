@@ -573,7 +573,7 @@ export default function RaiseInverterTicketPage() {
         <Col md={12}>
           <FormGroup>
             <Label for="singlePhaseQues1" className="font-medium">
-              Phase to neutral voltage (For single phase only, Write 0
+              Phase to neutral voltage (For single phase only. Write 0
               otherwise)
             </Label>
             <Input
@@ -621,7 +621,7 @@ export default function RaiseInverterTicketPage() {
         <Col md={12}>
           <FormGroup>
             <Label for="singlePhaseQues2" className="font-medium">
-              Phase to earth voltage (For single phase only, Write 0 otherwise)
+              Phase to earth voltage (For single phase only. Write 0 otherwise)
             </Label>
             <Input
               type="text"
