@@ -149,7 +149,7 @@ export default function RaiseInverterTicketPage() {
               name={`inverterQuestion-${ques.question}-${index}`}
               id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -611,7 +611,7 @@ export default function RaiseInverterTicketPage() {
               name="singlePhaseQues1"
               id="singlePhaseQues1"
               placeholder="Enter answer"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -657,7 +657,7 @@ export default function RaiseInverterTicketPage() {
               name={`singlePhaseQues2`}
               id={`singlePhaseQues2`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -710,7 +710,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues1`}
               id={`threePhaseQues1`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -756,7 +756,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues2`}
               id={`threePhaseQues2`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -802,7 +802,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues3`}
               id={`threePhaseQues3`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -848,7 +848,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues4`}
               id={`threePhaseQues4`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -894,7 +894,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues5`}
               id={`threePhaseQues5`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -940,7 +940,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues6`}
               id={`threePhaseQues6`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -986,7 +986,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues7`}
               id={`threePhaseQues7`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1032,7 +1032,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues8`}
               id={`threePhaseQues8`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1078,7 +1078,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues9`}
               id={`threePhaseQues9`}
               placeholder="Upload photo"
-              accept="capture=camera,image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
