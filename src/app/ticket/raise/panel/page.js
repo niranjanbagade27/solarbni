@@ -161,7 +161,7 @@ export default function RaisePanelTicketPage() {
               name={`panelQuestion-${ques.question}-${index}`}
               id={`panelQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
-              accept="image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -266,7 +266,7 @@ export default function RaisePanelTicketPage() {
                       name={`panelQuestion-${i}-${index}`}
                       id={`panelQuestion-${i}-${index}`}
                       placeholder="Upload photo"
-                      accept="image/*"
+                      accept="capture=camera"
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (file) {
