@@ -53,7 +53,8 @@ export default function RaiseInverterTicketPage() {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [inverterQuestionDataOne, setInverterQuestionDataOne] = useState([]);
   const [inverterQuestionDataTwo, setInverterQuestionDataTwo] = useState([]);
-  const [inverterAnswers, setInverterAnswers] = useState({});
+  const [inverterAnswersOne, setInverterAnswersOne] = useState({});
+  const [inverterAnswersTwo, setInverterAnswersTwo] = useState({});
   const [quesDropdownLimit, setQuesDropdownLimit] = useState({});
   const [customerDetail, setCustomerDetail] = useState({
     custName: "",
@@ -107,8 +108,14 @@ export default function RaiseInverterTicketPage() {
     setQuesDropdownLimit({ ...quesDropdownLimit, [srNo]: parseInt(value) });
   };
 
-  const getDefaultInverterQuestionForm = (question, index) => {
+  const getDefaultInverterQuestionForm = (
+    question,
+    index,
+    stateHandler,
+    qSection
+  ) => {
     const ques = question.questionChild[0];
+    let invAnswer = qSection === "1" ? inverterAnswersOne : inverterAnswersTwo;
     return (
       <Col key={index}>
         <FormGroup className="flex flex-col gap-2">
@@ -125,10 +132,10 @@ export default function RaiseInverterTicketPage() {
               id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Enter your answer"
               onChange={(e) =>
-                setInverterAnswers({
-                  ...inverterAnswers,
+                stateHandler({
+                  ...invAnswer,
                   [question.srNo]: {
-                    ...inverterAnswers[question.srNo],
+                    ...invAnswer[question.srNo],
                     question: ques.question,
                     answer: sanatizeHtml(e.target.value),
                   },
@@ -142,17 +149,16 @@ export default function RaiseInverterTicketPage() {
               name={`inverterQuestion-${ques.question}-${index}`}
               id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
                   const reader = new FileReader();
                   reader.onload = (event) => {
-                    setInverterAnswers({
-                      ...inverterAnswers,
+                    stateHandler({
+                      ...invAnswer,
                       [question.srNo]: {
-                        ...inverterAnswers[question.srNo],
+                        ...invAnswer[question.srNo],
                         question: ques.question,
                         photo: event.target.result,
                       },
@@ -168,7 +174,8 @@ export default function RaiseInverterTicketPage() {
     );
   };
 
-  const getDropdownInverterForm = (question, index) => {
+  const getDropdownInverterForm = (question, index, stateHandler, qSection) => {
+    let invAnswer = qSection === "1" ? inverterAnswersOne : inverterAnswersTwo;
     return (
       <>
         <Col key={index}>
@@ -185,13 +192,13 @@ export default function RaiseInverterTicketPage() {
               id={`inverter-${question.question}-${index}`}
               onChange={(e) => {
                 handleInverterDropdownLimit(question.srNo, e.target.value);
-                const updatedAnswers = { ...inverterAnswers };
+                const updatedAnswers = { ...invAnswer };
                 Object.keys(updatedAnswers).forEach((key) => {
                   if (key.startsWith(`${question.srNo}-`)) {
                     delete updatedAnswers[key];
                   }
                 });
-                setInverterAnswers(updatedAnswers);
+                stateHandler(updatedAnswers);
               }}
             >
               <option value="">Select</option>
@@ -224,12 +231,10 @@ export default function RaiseInverterTicketPage() {
                         id={`inverterQuestion-${i}-${index}`}
                         placeholder="Enter your answer"
                         onChange={(e) =>
-                          setInverterAnswers({
-                            ...inverterAnswers,
+                          stateHandler({
+                            ...invAnswer,
                             [`${question.srNo}-${i}-${index}`]: {
-                              ...inverterAnswers[
-                                `${question.srNo}-${i}-${index}`
-                              ],
+                              ...invAnswer[`${question.srNo}-${i}-${index}`],
                               question: `${ques.question}-${i + 1}`,
                               answer: sanatizeHtml(e.target.value),
                             },
@@ -250,10 +255,10 @@ export default function RaiseInverterTicketPage() {
                           if (file) {
                             const reader = new FileReader();
                             reader.onload = (event) => {
-                              setInverterAnswers({
-                                ...inverterAnswers,
+                              stateHandler({
+                                ...invAnswer,
                                 [`${question.srNo}-${i}-${index}`]: {
-                                  ...inverterAnswers[
+                                  ...invAnswer[
                                     `${question.srNo}-${i}-${index}`
                                   ],
                                   question: `${ques.question}-${i + 1}`,
@@ -489,7 +494,8 @@ export default function RaiseInverterTicketPage() {
     // console.log(customerDetail);
     // console.log(singlePhaseAnswers);
     // console.log(threePhaseAnswers);
-    // console.log(inverterAnswers);
+    // console.log(inverterAnswersOne);
+    // console.log(inverterAnswersTwo);
     const pageWidth = 297;
     const pageHeight = 210;
     const pdf = new jsPDF("landscape", "mm", "a4");
@@ -525,6 +531,14 @@ export default function RaiseInverterTicketPage() {
     addSolarInstallerInformation(pdf);
     pdf.addPage();
     addSystemInformation(pdf);
+    Object.keys(inverterAnswersOne).forEach((key) => {
+      addNewPage({
+        pdf,
+        question: inverterAnswersOne[key].question,
+        answer: inverterAnswersOne[key]?.answer,
+        photo: inverterAnswersOne[key]?.photo,
+      });
+    });
     if (
       parseInt(customerDetail.custInstalledInverterSingleOrThreePhase) === 1
     ) {
@@ -549,12 +563,12 @@ export default function RaiseInverterTicketPage() {
         });
       });
     }
-    Object.keys(inverterAnswers).forEach((key) => {
+    Object.keys(inverterAnswersTwo).forEach((key) => {
       addNewPage({
         pdf,
-        question: inverterAnswers[key].question,
-        answer: inverterAnswers[key]?.answer,
-        photo: inverterAnswers[key]?.photo,
+        question: inverterAnswersTwo[key].question,
+        answer: inverterAnswersTwo[key]?.answer,
+        photo: inverterAnswersTwo[key]?.photo,
       });
     });
     const totalPages = pdf.internal.getNumberOfPages();
@@ -597,8 +611,7 @@ export default function RaiseInverterTicketPage() {
               name="singlePhaseQues1"
               id="singlePhaseQues1"
               placeholder="Enter answer"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -644,8 +657,7 @@ export default function RaiseInverterTicketPage() {
               name={`singlePhaseQues2`}
               id={`singlePhaseQues2`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -698,8 +710,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues1`}
               id={`threePhaseQues1`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -745,8 +756,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues2`}
               id={`threePhaseQues2`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -792,8 +802,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues3`}
               id={`threePhaseQues3`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -839,8 +848,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues4`}
               id={`threePhaseQues4`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -886,8 +894,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues5`}
               id={`threePhaseQues5`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -933,8 +940,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues6`}
               id={`threePhaseQues6`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -980,8 +986,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues7`}
               id={`threePhaseQues7`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1027,8 +1032,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues8`}
               id={`threePhaseQues8`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1074,8 +1078,7 @@ export default function RaiseInverterTicketPage() {
               name={`threePhaseQues9`}
               id={`threePhaseQues9`}
               placeholder="Upload photo"
-              accept="image/*"
-              capture="environment"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1103,7 +1106,7 @@ export default function RaiseInverterTicketPage() {
     setIsGeneratingPdf(true);
     const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+      pdfFileName: `${customerDetail.custInstalledInverterCompany}_Inverter_${customerDetail.custName}_${customerDetail.custSysCapacity}kW`,
       pdf,
     });
     setIsGeneratingPdf(false);
@@ -1145,11 +1148,19 @@ export default function RaiseInverterTicketPage() {
         }
       });
     }
-    Object.keys(inverterAnswers).forEach((key) => {
-      if (inverterAnswers[key]?.answer) {
+    Object.keys(inverterAnswersOne).forEach((key) => {
+      if (inverterAnswersOne[key]?.answer) {
         questionArray.push({
-          question: inverterAnswers[key].question,
-          answer: inverterAnswers[key]?.answer,
+          question: inverterAnswersOne[key].question,
+          answer: inverterAnswersOne[key]?.answer,
+        });
+      }
+    });
+    Object.keys(inverterAnswersTwo).forEach((key) => {
+      if (inverterAnswersTwo[key]?.answer) {
+        questionArray.push({
+          question: inverterAnswersTwo[key].question,
+          answer: inverterAnswersTwo[key]?.answer,
         });
       }
     });
@@ -1180,8 +1191,18 @@ export default function RaiseInverterTicketPage() {
                 {inverterQuestionDataOne.map((question, index) => (
                   <Row key={index}>
                     {question.maxDropdownElements === 1
-                      ? getDefaultInverterQuestionForm(question, index)
-                      : getDropdownInverterForm(question, index)}
+                      ? getDefaultInverterQuestionForm(
+                          question,
+                          index,
+                          setInverterAnswersOne,
+                          "1"
+                        )
+                      : getDropdownInverterForm(
+                          question,
+                          index,
+                          setInverterAnswersOne,
+                          "1"
+                        )}
                     <hr />
                   </Row>
                 ))}
@@ -1202,8 +1223,18 @@ export default function RaiseInverterTicketPage() {
                 {inverterQuestionDataTwo.map((question, index) => (
                   <Row key={index}>
                     {question.maxDropdownElements === 1
-                      ? getDefaultInverterQuestionForm(question, index)
-                      : getDropdownInverterForm(question, index)}
+                      ? getDefaultInverterQuestionForm(
+                          question,
+                          index,
+                          setInverterAnswersTwo,
+                          "2"
+                        )
+                      : getDropdownInverterForm(
+                          question,
+                          index,
+                          setInverterAnswersTwo,
+                          "2"
+                        )}
                     <hr />
                   </Row>
                 ))}

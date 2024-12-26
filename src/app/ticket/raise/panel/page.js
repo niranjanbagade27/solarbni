@@ -101,6 +101,7 @@ export default function RaisePanelTicketPage() {
     "Other",
   ]);
   const [pdfUrl, setPdfUrl] = useState();
+  const [isPDFPreviewLoading, setIsPDFPreviewLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,7 +162,7 @@ export default function RaisePanelTicketPage() {
               name={`panelQuestion-${ques.question}-${index}`}
               id={`panelQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
-              accept="image/*"
+              accept="capture=camera"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -266,7 +267,7 @@ export default function RaisePanelTicketPage() {
                       name={`panelQuestion-${i}-${index}`}
                       id={`panelQuestion-${i}-${index}`}
                       placeholder="Upload photo"
-                      accept="image/*"
+                      accept="capture=camera"
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (file) {
@@ -569,22 +570,28 @@ export default function RaisePanelTicketPage() {
       addHeader(pdf);
       addFooter(pdf, currPage, totalPages);
     }
-    pdf.save("panel-ticket.pdf");
+    // pdf.save("panel-ticket.pdf");
+    return pdf;
+  };
+
+  const handleSubmitPanelTicket = async () => {
+    setIsGeneratingPdf(true);
+    const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledPanelCompany}_${
-        customerDetail.custInstalledPanelModel
-      }_${customerDetail.custName.split(" ").join("_")}_${
-        customerDetail.custSysCapacity
-      }`,
+      pdfFileName: `${customerDetail.custInstalledPanelCompany}_Panel${customerDetail.custName}_${customerDetail.custSysCapacity}kW`,
       pdf,
     });
     setIsGeneratingPdf(false);
     setPdfUrl(pdfBlob.url);
   };
 
-  const handleSubmitPanelTicket = () => {
-    setIsGeneratingPdf(true);
-    // generatePdf();
+  const handlePdfPreview = async () => {
+    setIsPDFPreviewLoading(true);
+    const pdf = await generatePdf();
+    const pdfBlob = pdf.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
+    setIsPDFPreviewLoading(false);
   };
 
   const generateQuestionArray = () => {
@@ -731,19 +738,38 @@ export default function RaisePanelTicketPage() {
                     </div>
                   </div>
                 ))}
-                {!isGeneratingPdf && (
-                  <Button
-                    color="warning"
-                    onClick={() => handleSubmitPanelTicket()}
-                  >
-                    Submit
-                  </Button>
-                )}
-                {isGeneratingPdf && (
-                  <div className="flex justify-center items-center h-full">
-                    <BounceLoader color={spinnerColor} />
+                <div className="flex flex-row gap-4">
+                  <div>
+                    {!isPDFPreviewLoading && (
+                      <Button
+                        color="warning"
+                        onClick={() => handlePdfPreview()}
+                      >
+                        Preview PDF
+                      </Button>
+                    )}
+                    {isPDFPreviewLoading && (
+                      <div className="flex justify-center items-center h-full">
+                        <BounceLoader color={spinnerColor} />
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div>
+                    {isGeneratingPdf && (
+                      <div className="flex justify-center items-center h-full">
+                        <BounceLoader color={spinnerColor} />
+                      </div>
+                    )}
+                    {!isGeneratingPdf && (
+                      <Button
+                        color="warning"
+                        onClick={() => handleSubmitPanelTicket()}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </Form>
               <Modal isOpen={isGeneratingPdf}>
                 <ModalHeader>Generating PDF</ModalHeader>
