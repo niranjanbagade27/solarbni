@@ -83,6 +83,7 @@ export default function RaiseInverterTicketPage() {
   const [threePhaseAnswers, setThreePhaseAnswers] =
     useState(threePhaseQuestions);
   const [pdfUrl, setPdfUrl] = useState();
+  const [isPDFPreviewLoading, setIsPDFPreviewLoading] = useState(false);
   let pdfQuesNo = 1;
 
   useEffect(() => {
@@ -142,6 +143,7 @@ export default function RaiseInverterTicketPage() {
               id={`inverterQuestion-${ques.question}-${index}`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -242,6 +244,7 @@ export default function RaiseInverterTicketPage() {
                         id={`inverterQuestion-${i}-${index}`}
                         placeholder="Upload photo"
                         accept="image/*"
+                        capture="environment"
                         onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
@@ -561,12 +564,7 @@ export default function RaiseInverterTicketPage() {
       addFooter(pdf, currPage, totalPages);
     }
     // pdf.save("inverter-ticket.pdf");
-    const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
-      pdf,
-    });
-    setIsGeneratingPdf(false);
-    setPdfUrl(pdfBlob.url);
+    return pdf;
   };
 
   const getSinglePhaseForm = () => {
@@ -600,6 +598,7 @@ export default function RaiseInverterTicketPage() {
               id="singlePhaseQues1"
               placeholder="Enter answer"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -646,6 +645,7 @@ export default function RaiseInverterTicketPage() {
               id={`singlePhaseQues2`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -699,6 +699,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues1`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -745,6 +746,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues2`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -791,6 +793,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues3`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -837,6 +840,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues4`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -883,6 +887,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues5`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -929,6 +934,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues6`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -975,6 +981,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues7`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1021,6 +1028,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues8`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1067,6 +1075,7 @@ export default function RaiseInverterTicketPage() {
               id={`threePhaseQues9`}
               placeholder="Upload photo"
               accept="image/*"
+              capture="environment"
               onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1090,9 +1099,24 @@ export default function RaiseInverterTicketPage() {
     );
   };
 
-  const handleSubmitInverterTicket = () => {
+  const handleSubmitInverterTicket = async () => {
     setIsGeneratingPdf(true);
-    generatePdf();
+    const pdf = await generatePdf();
+    const pdfBlob = await uploadPdf({
+      pdfFileName: `${customerDetail.custInstalledInverterCompany}_${customerDetail.custInstalledInverterModel}_${customerDetail.custName}_${customerDetail.custSysCapacity}`,
+      pdf,
+    });
+    setIsGeneratingPdf(false);
+    setPdfUrl(pdfBlob.url);
+  };
+
+  const handlePdfPreview = async () => {
+    setIsPDFPreviewLoading(true);
+    const pdf = await generatePdf();
+    const pdfBlob = pdf.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
+    setIsPDFPreviewLoading(false);
   };
 
   const generateQuestionArray = () => {
@@ -1183,19 +1207,38 @@ export default function RaiseInverterTicketPage() {
                     <hr />
                   </Row>
                 ))}
-                {!isGeneratingPdf && (
-                  <Button
-                    color="warning"
-                    onClick={() => handleSubmitInverterTicket()}
-                  >
-                    Submit
-                  </Button>
-                )}
-                {isGeneratingPdf && (
-                  <div className="flex justify-center items-center h-full">
-                    <BounceLoader color={spinnerColor} />
+                <div className="flex flex-row gap-4">
+                  <div>
+                    {!isPDFPreviewLoading && (
+                      <Button
+                        color="warning"
+                        onClick={() => handlePdfPreview()}
+                      >
+                        Preview PDF
+                      </Button>
+                    )}
+                    {isPDFPreviewLoading && (
+                      <div className="flex justify-center items-center h-full">
+                        <BounceLoader color={spinnerColor} />
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div>
+                    {isGeneratingPdf && (
+                      <div className="flex justify-center items-center h-full">
+                        <BounceLoader color={spinnerColor} />
+                      </div>
+                    )}
+                    {!isGeneratingPdf && (
+                      <Button
+                        color="warning"
+                        onClick={() => handleSubmitInverterTicket()}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </Form>
               <Modal isOpen={isGeneratingPdf}>
                 <ModalHeader>Generating PDF</ModalHeader>
@@ -1213,6 +1256,11 @@ export default function RaiseInverterTicketPage() {
                   <div className="text-rose-700 font-medium italic">{`Don't close the window until the PDF is generated.`}</div>
                 </ModalFooter>
               </Modal>
+              {isPDFPreviewLoading && (
+                <div className="flex justify-center items-center h-full">
+                  <BounceLoader color={spinnerColor} />
+                </div>
+              )}
             </div>
           )}
           {pdfUrl && (
