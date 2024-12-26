@@ -16,6 +16,10 @@ import {
 import { userRoles } from "@/constants/role";
 import { toast } from "react-toastify";
 
+function removeCommas(str){
+  return str.replace(/,/g, '.');;
+}
+
 export default function AdminExportPage({ loggedInUser }) {
   const [isLoadingAllExport, setIsLoadingAllExport] = useState(false);
   const [isLoadingContractorEmail, setIsLoadingContractorEmail] =
@@ -31,7 +35,7 @@ export default function AdminExportPage({ loggedInUser }) {
       .map((key) => {
         console.log(Array.isArray(data[0][key]));
         if (Array.isArray(data[0][key])) {
-          return data[0][key].map((_, index) => `"${_.question}"`).join(",");
+          return "Questions and Answers";
         }
         return key;
       })
@@ -43,7 +47,7 @@ export default function AdminExportPage({ loggedInUser }) {
           .filter((key) => !excludedKeys.includes(key))
           .map((key) => {
             if (Array.isArray(ticket[key])) {
-              return ticket[key].map((item) => `${item.answer}`).join(",");
+              return ticket[key].map((item) => `${removeCommas(item.question)} :: ${removeCommas(item.answer)}`).join(",");
             }
             return ticket[key];
           })
