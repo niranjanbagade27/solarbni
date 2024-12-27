@@ -9,12 +9,20 @@ export async function POST(request) {
     const body = await request.json();
     const { questions } = body;
     for (const ques of questions) {
-      const { id, srNo, questionSection, question, questionChild } = ques;
+      const {
+        id,
+        srNo,
+        questionSection,
+        question,
+        questionChild,
+        maxDropdownElements,
+      } = ques;
       await InverterFaultReason.findByIdAndUpdate(id, {
         srNo,
         questionSection,
         question,
         questionChild,
+        maxDropdownElements,
       });
     }
     return NextResponse.json(
