@@ -8,9 +8,14 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const { questions } = body;
-    for (const question of questions) {
-      const { id, srNo, questionSection } = question;
-      await PanelFaultReason.findByIdAndUpdate(id, { srNo, questionSection });
+    for (const ques of questions) {
+      const { id, srNo, questionSection, question, questionChild } = ques;
+      await PanelFaultReason.findByIdAndUpdate(id, {
+        srNo,
+        questionSection,
+        question,
+        questionChild,
+      });
     }
     return NextResponse.json(
       {

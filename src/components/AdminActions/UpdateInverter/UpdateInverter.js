@@ -41,6 +41,14 @@ export default function UpdateInverter() {
   const [questionSection, setQuestionSection] = useState(1);
   const [inverterQuestion, setInverterQuestion] = useState([]);
   const [isQuestionLoading, setIsQuestionLoading] = useState(true);
+  const [showDropwdownEditQuesModal, setShowDropwdownEditQuesModal] =
+    useState(false);
+  const [dropdownEditModalData, setDropdownEditModalData] = useState({});
+  const [newDropdownEntry, setNewDropdownEntry] = useState({
+    question: "",
+    textAllowed: false,
+    photoAllowed: false,
+  });
 
   const handleAddQuestion = async () => {
     try {
@@ -93,7 +101,7 @@ export default function UpdateInverter() {
   }, []);
 
   const handleUpdateQuestionSrNo = (id, value) => {
-    const newPanelQuestion = inverterQuestion.map((question) => {
+    const newInverterQuestion = inverterQuestion.map((question) => {
       if (question._id === id) {
         return {
           ...question,
@@ -102,11 +110,11 @@ export default function UpdateInverter() {
       }
       return question;
     });
-    setInverterQuestion(newPanelQuestion);
+    setInverterQuestion(newInverterQuestion);
   };
 
   const handleUpdateQuestionSection = (id, value) => {
-    const newPanelQuestion = inverterQuestion.map((question) => {
+    const newInverterQuestion = inverterQuestion.map((question) => {
       if (question._id === id) {
         return {
           ...question,
@@ -115,17 +123,40 @@ export default function UpdateInverter() {
       }
       return question;
     });
-    setInverterQuestion(newPanelQuestion);
+    setInverterQuestion(newInverterQuestion);
   };
 
-  const handleUpdateQuestion = async () => {
+  const handleUpdateQuestionTextDefault = (id, value) => {
+    const newInverterQuestion = inverterQuestion.map((question) => {
+      if (question._id === id) {
+        return {
+          ...question,
+          questionChild: [
+            {
+              ...question.questionChild[0],
+              question: sanatizeHtml(value),
+            },
+          ],
+        };
+      }
+      return question;
+    });
+    setInverterQuestion(newInverterQuestion);
+  };
+
+  const handleUpdateQuestion = async (newInverterQuestion) => {
     try {
       setIsLoading(true);
-      const quesPayload = inverterQuestion.map((question) => {
+      const updatedQuestionList = newInverterQuestion
+        ? newInverterQuestion
+        : inverterQuestion;
+      const quesPayload = updatedQuestionList.map((question) => {
         return {
           id: question._id,
           srNo: question.srNo,
           questionSection: question.questionSection,
+          question: question.question,
+          questionChild: question.questionChild,
         };
       });
       const response = await axios.post("/api/inverterfaultquestions/update", {
@@ -138,6 +169,35 @@ export default function UpdateInverter() {
       toast(e.response.data.message);
       setIsLoading(false);
     }
+  };
+
+  const handleShowDropdownQuesModal = (question) => {
+    setShowDropwdownEditQuesModal(true);
+    setDropdownEditModalData(question);
+  };
+
+  const handleAddNewDropdownQuestion = () => {
+    const newQuesChild = [...dropdownEditModalData.questionChild];
+    newQuesChild.push(newDropdownEntry);
+    setDropdownEditModalData({
+      ...dropdownEditModalData,
+      questionChild: newQuesChild,
+    });
+    setNewDropdownEntry({
+      question: "",
+      textAllowed: false,
+      photoAllowed: false,
+    });
+  };
+
+  const handleDeleteDropdownEntry = (child) => {
+    const newQuesChild = dropdownEditModalData.questionChild.filter(
+      (ques) => ques !== child
+    );
+    setDropdownEditModalData({
+      ...dropdownEditModalData,
+      questionChild: newQuesChild,
+    });
   };
 
   const getQuestionTypeForm = (questionType) => {
@@ -447,45 +507,332 @@ export default function UpdateInverter() {
           <div>
             {!isQuestionLoading &&
               inverterQuestion.map((question, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col sm:flex-row justify-between sm:items-center items-start mt-4 gap-3 sm:gap-0"
-                >
-                  <div className="text-black text-lg">
-                    {question.question
-                      ? question.question
-                      : question.questionChild[0].question}
-                  </div>
-                  <div className="flex flex-row gap-2 sm:w-[40%] ">
+                <div key={index}>
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center items-start mt-4 gap-3 sm:gap-0">
                     <div className="w-[50%]">
-                      Sr.No :{" "}
-                      <Input
-                        type="text"
-                        value={question.srNo}
-                        onChange={(e) =>
-                          handleUpdateQuestionSrNo(question._id, e.target.value)
-                        }
-                      />
+                      Question Text
+                      {question.question === "" && (
+                        <div className="flex flex-col gap-2">
+                          <div>
+                            <Input
+                              type="text"
+                              value={question.questionChild[0].question}
+                              onChange={(e) =>
+                                handleUpdateQuestionTextDefault(
+                                  question._id,
+                                  sanatizeHtml(e.target.value)
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="flex flex-row gap-5">
+                            <div>
+                              <span className="pr-4">Text Allowed ?</span>
+                              <Input
+                                type="checkbox"
+                                checked={question.questionChild[0].textAllowed}
+                                onChange={() => {
+                                  let newQuesChild = [
+                                    ...dropdownEditModalData.questionChild,
+                                  ];
+                                  newQuesChild[0] = {
+                                    ...newQuesChild[0],
+                                    textAllowed:
+                                      !question.questionChild[0].textAllowed,
+                                  };
+                                  setDropdownEditModalData({
+                                    ...dropdownEditModalData,
+                                    questionChild: newQuesChild,
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <span className="pr-4">Photo Allowed ?</span>
+                              <Input
+                                type="checkbox"
+                                checked={question.questionChild[0].photoAllowed}
+                                onChange={() => {
+                                  let newQuesChild = [
+                                    ...dropdownEditModalData.questionChild,
+                                  ];
+                                  newQuesChild[0] = {
+                                    ...newQuesChild[0],
+                                    photoAllowed:
+                                      !question.questionChild[0].photoAllowed,
+                                  };
+                                  setDropdownEditModalData({
+                                    ...dropdownEditModalData,
+                                    questionChild: newQuesChild,
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {question.question !== "" && (
+                        <div className="flex flex-row gap-5">
+                          <div className="text-black text-md mt-1">
+                            {question.question}
+                          </div>
+                          <div>
+                            <Button
+                              color="warning"
+                              onClick={() =>
+                                handleShowDropdownQuesModal(question)
+                              }
+                            >
+                              Expand
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="w-[50%]">
-                      Section :{" "}
-                      <Input
-                        type="select"
-                        value={question.questionSection}
-                        onChange={(e) =>
-                          handleUpdateQuestionSection(
-                            question._id,
-                            e.target.value
-                          )
-                        }
+                    <div className="flex flex-row gap-2 sm:w-[40%] ">
+                      <div className="w-[50%]">
+                        Sr.No :{" "}
+                        <Input
+                          type="text"
+                          value={question.srNo}
+                          onChange={(e) =>
+                            handleUpdateQuestionSrNo(
+                              question._id,
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="w-[50%]">
+                        Section :{" "}
+                        <Input
+                          type="select"
+                          value={question.questionSection}
+                          onChange={(e) =>
+                            handleUpdateQuestionSection(
+                              question._id,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                        </Input>
+                      </div>
+                    </div>
+                  </div>
+                  <hr></hr>
+                </div>
+              ))}
+            <Modal
+              isOpen={showDropwdownEditQuesModal}
+              toggle={() => setShowDropwdownEditQuesModal(false)}
+              size="lg"
+            >
+              <ModalHeader toggle={() => setShowDropwdownEditQuesModal(false)}>
+                Edit Dropdown Question
+              </ModalHeader>
+              <ModalBody>
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <i>Main Question Text</i>
+                    <Input
+                      type="text"
+                      value={dropdownEditModalData.question}
+                      onChange={(e) => {
+                        setDropdownEditModalData({
+                          ...dropdownEditModalData,
+                          question: sanatizeHtml(e.target.value),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <i>Dropdown Questions</i>
+                    {dropdownEditModalData &&
+                      dropdownEditModalData?.questionChild &&
+                      dropdownEditModalData?.questionChild.map(
+                        (child, index) => (
+                          <div key={index} className="flex flex-row gap-2">
+                            <div className="w-[80%] flex flex-col gap-2">
+                              <div>
+                                <Input
+                                  type="text"
+                                  value={child.question}
+                                  onChange={(e) => {
+                                    let newQuesChild = [
+                                      ...dropdownEditModalData.questionChild,
+                                    ];
+                                    newQuesChild[index] = {
+                                      ...newQuesChild[index],
+                                      question: sanatizeHtml(e.target.value),
+                                    };
+                                    setDropdownEditModalData({
+                                      ...dropdownEditModalData,
+                                      questionChild: newQuesChild,
+                                    });
+                                  }}
+                                />
+                              </div>
+                              <div className="flex flex-row gap-5">
+                                <div>
+                                  <span className="pr-4">Text Allowed ?</span>
+                                  <Input
+                                    type="checkbox"
+                                    checked={child.textAllowed}
+                                    onChange={() => {
+                                      let newQuesChild = [
+                                        ...dropdownEditModalData.questionChild,
+                                      ];
+                                      newQuesChild[index] = {
+                                        ...newQuesChild[index],
+                                        textAllowed: !child.textAllowed,
+                                      };
+                                      setDropdownEditModalData({
+                                        ...dropdownEditModalData,
+                                        questionChild: newQuesChild,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <span className="pr-4">Photo Allowed ?</span>
+                                  <Input
+                                    type="checkbox"
+                                    checked={child.photoAllowed}
+                                    onChange={() => {
+                                      let newQuesChild = [
+                                        ...dropdownEditModalData.questionChild,
+                                      ];
+                                      newQuesChild[index] = {
+                                        ...newQuesChild[index],
+                                        photoAllowed: !child.photoAllowed,
+                                      };
+                                      setDropdownEditModalData({
+                                        ...dropdownEditModalData,
+                                        questionChild: newQuesChild,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="w-[10%]">
+                              <Input
+                                type="number"
+                                value={
+                                  dropdownEditModalData.questionChild.indexOf(
+                                    child
+                                  ) + 1
+                                }
+                                onChange={(e) => {
+                                  let newQuesChild = [
+                                    ...dropdownEditModalData.questionChild,
+                                  ];
+                                  const [movedElement] = newQuesChild.splice(
+                                    index,
+                                    1
+                                  );
+                                  newQuesChild.splice(
+                                    parseInt(e.target.value) - 1,
+                                    0,
+                                    movedElement
+                                  );
+                                  setDropdownEditModalData({
+                                    ...dropdownEditModalData,
+                                    questionChild: newQuesChild,
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Button
+                                color="danger"
+                                onClick={() => handleDeleteDropdownEntry(child)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      )}
+                  </div>
+                  <hr></hr>
+                  <div className="flex flex-row gap-3">
+                    <div className="w-[80%] flex flex-col gap-2">
+                      <div>
+                        <Input
+                          type="text"
+                          placeholder="Add new dropdown entry"
+                          value={newDropdownEntry.question}
+                          onChange={(e) => {
+                            setNewDropdownEntry({
+                              ...newDropdownEntry,
+                              question: sanatizeHtml(e.target.value),
+                            });
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-row gap-5">
+                        <div>
+                          <span className="pr-4">Text Allowed ?</span>
+                          <Input
+                            type="checkbox"
+                            checked={newDropdownEntry.textAllowed}
+                            onChange={() => {
+                              setNewDropdownEntry({
+                                ...newDropdownEntry,
+                                textAllowed: !newDropdownEntry.textAllowed,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <span className="pr-4">Photo Allowed ?</span>
+                          <Input
+                            type="checkbox"
+                            checked={newDropdownEntry.photoAllowed}
+                            onChange={() => {
+                              setNewDropdownEntry({
+                                ...newDropdownEntry,
+                                photoAllowed: !newDropdownEntry.photoAllowed,
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <Button
+                        color="warning"
+                        onClick={() => handleAddNewDropdownQuestion()}
                       >
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                      </Input>
+                        Add
+                      </Button>
                     </div>
                   </div>
                 </div>
-              ))}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="warning"
+                  onClick={() => {
+                    const newInverterQuestion = inverterQuestion.map((ques) => {
+                      if (ques._id === dropdownEditModalData._id) {
+                        return dropdownEditModalData;
+                      }
+                      return ques;
+                    });
+                    setInverterQuestion(newInverterQuestion);
+                    handleUpdateQuestion(newInverterQuestion);
+                    setShowDropwdownEditQuesModal(false);
+                    setDropdownEditModalData({});
+                  }}
+                >
+                  Update
+                </Button>{" "}
+              </ModalFooter>
+            </Modal>
             {isQuestionLoading && <BounceLoader color={spinnerColor} />}
           </div>
         );
