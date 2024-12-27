@@ -102,6 +102,7 @@ export default function RaisePanelTicketPage() {
   ]);
   const [pdfUrl, setPdfUrl] = useState();
   const [isPDFPreviewLoading, setIsPDFPreviewLoading] = useState(false);
+  const [isFormFilled, setIsFormFilled] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,6 +120,12 @@ export default function RaisePanelTicketPage() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (isFormFilled) {
+      handleSubmitPanelTicket();
+    }
+  }, [isFormFilled]);
 
   const handlePanelDropdownLimit = (srNo, value, parIndex) => {
     setQuesDropdownLimit({
@@ -140,6 +147,7 @@ export default function RaisePanelTicketPage() {
           </Label>
           {ques.textAllowed && (
             <Input
+              required
               type="text"
               name={`panelQuestion-${ques.question}-${index}`}
               id={`panelQuestion-${ques.question}-${index}`}
@@ -158,6 +166,7 @@ export default function RaisePanelTicketPage() {
           )}
           {ques.photoAllowed && (
             <Input
+              required
               type="file"
               name={`panelQuestion-${ques.question}-${index}`}
               id={`panelQuestion-${ques.question}-${index}`}
@@ -199,6 +208,7 @@ export default function RaisePanelTicketPage() {
               {question.question}
             </Label>
             <Input
+              required={question.question.startsWith("Optional") ? false : true}
               type="select"
               name={`panelDropdown-${question.question}-${parIndex}`}
               id={`panelDropdown-${question.question}-${parIndex}`}
@@ -243,6 +253,9 @@ export default function RaisePanelTicketPage() {
                   </Label>
                   {ques.textAllowed && (
                     <Input
+                      required={
+                        question.question.startsWith("Optional") ? false : true
+                      }
                       type="text"
                       name={`panelQuestion-${i}-${index}-${parIndex}`}
                       id={`panelQuestion-${i}-${index}-${parIndex}`}
@@ -263,6 +276,9 @@ export default function RaisePanelTicketPage() {
                   )}
                   {ques.photoAllowed && (
                     <Input
+                      required={
+                        question.question.startsWith("Optional") ? false : true
+                      }
                       type="file"
                       name={`panelQuestion-${i}-${index}`}
                       id={`panelQuestion-${i}-${index}`}
@@ -517,9 +533,9 @@ export default function RaisePanelTicketPage() {
   };
 
   const generatePdf = async () => {
-    console.log("submitting ticket");
-    console.log(customerDetail);
-    console.log(panelAnswers);
+    // console.log("submitting ticket");
+    // console.log(customerDetail);
+    // console.log(panelAnswers);
     const pageWidth = 297;
     const pageHeight = 210;
     const pdf = new jsPDF("landscape", "mm", "a4");
@@ -542,7 +558,7 @@ export default function RaisePanelTicketPage() {
     pdf.text(`${customerDetail.custSysCapacity} kW`, 125, 85);
     const splitAddress = pdf.splitTextToSize(customerDetail.custAddress, 150);
     pdf.text(splitAddress, 125, 95);
-    pdf.text(`${customerDetail.custPincode}`, 125, 105);
+    pdf.text(`${customerDetail.custPincode}`, 125, 111);
     pdf.text("Installed by,", 125, 120);
     pdf.text(isVerified.companyName, 125, 130);
     pdf.text(new Date().toDateString(), 125, 140);
@@ -574,16 +590,20 @@ export default function RaisePanelTicketPage() {
     return pdf;
   };
 
-  const handleSubmitPanelTicket = async () => {
+  async function handleSubmitPanelTicket() {
     setIsGeneratingPdf(true);
     const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledPanelCompany}_Panel${customerDetail.custName}_${customerDetail.custSysCapacity}kW`,
+      pdfFileName: `${
+        customerDetail.custInstalledPanelCompany
+      }_Panel${customerDetail.custName.split(" ".join("_"))}_${
+        customerDetail.custSysCapacity
+      }kW`,
       pdf,
     });
     setIsGeneratingPdf(false);
     setPdfUrl(pdfBlob.url);
-  };
+  }
 
   const handlePdfPreview = async () => {
     setIsPDFPreviewLoading(true);
@@ -622,7 +642,12 @@ export default function RaisePanelTicketPage() {
             <div>
               <div className="text-4xl">Raise new inverter ticket</div>
               <br></br>
-              <Form>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsFormFilled(true);
+                }}
+              >
                 <CustomerDetailForm
                   handleCustomerDetailForm={setCustomerDetail}
                   customerDetail={customerDetail}
@@ -635,6 +660,7 @@ export default function RaisePanelTicketPage() {
                         Number of visually affected panels
                       </Label>
                       <Input
+                        required
                         type="select"
                         name="noAffectedPanel"
                         id="noAffectedPanel"
@@ -693,6 +719,7 @@ export default function RaisePanelTicketPage() {
                               Select the panel fault type
                             </Label>
                             <Input
+                              required
                               type="select"
                               name="Select the panel fault type"
                               id="Select the panel fault type"
@@ -761,10 +788,7 @@ export default function RaisePanelTicketPage() {
                       </div>
                     )}
                     {!isGeneratingPdf && (
-                      <Button
-                        color="warning"
-                        onClick={() => handleSubmitPanelTicket()}
-                      >
+                      <Button color="warning" type="submit">
                         Submit
                       </Button>
                     )}

@@ -86,6 +86,7 @@ export default function RaiseInverterTicketPage() {
   const [pdfUrl, setPdfUrl] = useState();
   const [isPDFPreviewLoading, setIsPDFPreviewLoading] = useState(false);
   let pdfQuesNo = 1;
+  const [isFormFilled, setIsFormFilled] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +104,12 @@ export default function RaiseInverterTicketPage() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (isFormFilled) {
+      handleSubmitInverterTicket();
+    }
+  }, [isFormFilled]);
 
   const handleInverterDropdownLimit = (srNo, value) => {
     setQuesDropdownLimit({ ...quesDropdownLimit, [srNo]: parseInt(value) });
@@ -127,6 +134,7 @@ export default function RaiseInverterTicketPage() {
           </Label>
           {ques.textAllowed && (
             <Input
+              required
               type="text"
               name={`inverterQuestion-${ques.question}-${index}`}
               id={`inverterQuestion-${ques.question}-${index}`}
@@ -145,6 +153,7 @@ export default function RaiseInverterTicketPage() {
           )}
           {ques.photoAllowed && (
             <Input
+              required
               type="file"
               name={`inverterQuestion-${ques.question}-${index}`}
               id={`inverterQuestion-${ques.question}-${index}`}
@@ -187,6 +196,7 @@ export default function RaiseInverterTicketPage() {
               {question.question}
             </Label>
             <Input
+              required={question.question.startsWith("Optional") ? false : true}
               type="select"
               name={`inverter-${question.question}-${index}`}
               id={`inverter-${question.question}-${index}`}
@@ -226,6 +236,11 @@ export default function RaiseInverterTicketPage() {
                     </Label>
                     {ques.textAllowed && (
                       <Input
+                        required={
+                          question.question.startsWith("Optional")
+                            ? false
+                            : true
+                        }
                         type="text"
                         name={`inverterQuestion-${i}-${index}`}
                         id={`inverterQuestion-${i}-${index}`}
@@ -244,6 +259,11 @@ export default function RaiseInverterTicketPage() {
                     )}
                     {ques.photoAllowed && (
                       <Input
+                        required={
+                          question.question.startsWith("Optional")
+                            ? false
+                            : true
+                        }
                         type="file"
                         name={`inverterQuestion-${i}-${index}`}
                         id={`inverterQuestion-${i}-${index}`}
@@ -591,6 +611,7 @@ export default function RaiseInverterTicketPage() {
               otherwise)
             </Label>
             <Input
+              required
               type="text"
               name="singlePhaseQues1"
               id="singlePhaseQues1"
@@ -607,6 +628,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name="singlePhaseQues1"
               id="singlePhaseQues1"
@@ -637,6 +659,7 @@ export default function RaiseInverterTicketPage() {
               Phase to earth voltage (For single phase only. Write 0 otherwise)
             </Label>
             <Input
+              required
               type="text"
               name="singlePhaseQues2"
               id="singlePhaseQues2"
@@ -653,6 +676,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`singlePhaseQues2`}
               id={`singlePhaseQues2`}
@@ -690,6 +714,7 @@ export default function RaiseInverterTicketPage() {
               Red phase and Yellow phase voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues1"
               id="threePhaseQues1"
@@ -706,6 +731,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues1`}
               id={`threePhaseQues1`}
@@ -736,6 +762,7 @@ export default function RaiseInverterTicketPage() {
               Yellow phase and Blue phase voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues2"
               id="threePhaseQues2"
@@ -752,6 +779,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues2`}
               id={`threePhaseQues2`}
@@ -782,6 +810,7 @@ export default function RaiseInverterTicketPage() {
               Red phase and Blue phase voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues3"
               id="threePhaseQues3"
@@ -798,6 +827,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues3`}
               id={`threePhaseQues3`}
@@ -828,6 +858,7 @@ export default function RaiseInverterTicketPage() {
               Red phase to neutral voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues4"
               id="threePhaseQues4"
@@ -844,6 +875,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues4`}
               id={`threePhaseQues4`}
@@ -874,6 +906,7 @@ export default function RaiseInverterTicketPage() {
               Yellow phase and neutral voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues5"
               id="threePhaseQues5"
@@ -890,6 +923,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues5`}
               id={`threePhaseQues5`}
@@ -920,6 +954,7 @@ export default function RaiseInverterTicketPage() {
               Blue phase and neutral voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues6"
               id="threePhaseQues6"
@@ -936,6 +971,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues6`}
               id={`threePhaseQues6`}
@@ -966,6 +1002,7 @@ export default function RaiseInverterTicketPage() {
               Red phase to earth voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues7"
               id="threePhaseQues7"
@@ -982,6 +1019,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues7`}
               id={`threePhaseQues7`}
@@ -1012,6 +1050,7 @@ export default function RaiseInverterTicketPage() {
               Yellow phase to earth voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues8"
               id="threePhaseQues8"
@@ -1028,6 +1067,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues8`}
               id={`threePhaseQues8`}
@@ -1058,6 +1098,7 @@ export default function RaiseInverterTicketPage() {
               Blue phase to earth voltage
             </Label>
             <Input
+              required
               type="text"
               name="threePhaseQues9"
               id="threePhaseQues9"
@@ -1074,6 +1115,7 @@ export default function RaiseInverterTicketPage() {
             />
             <br />
             <Input
+              required
               type="file"
               name={`threePhaseQues9`}
               id={`threePhaseQues9`}
@@ -1106,7 +1148,11 @@ export default function RaiseInverterTicketPage() {
     setIsGeneratingPdf(true);
     const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${customerDetail.custInstalledInverterCompany}_Inverter_${customerDetail.custName}_${customerDetail.custSysCapacity}kW`,
+      pdfFileName: `${
+        customerDetail.custInstalledInverterCompany
+      }_Inverter_${customerDetail.custName.split(" ".join("_"))}_${
+        customerDetail.custSysCapacity
+      }kW`,
       pdf,
     });
     setIsGeneratingPdf(false);
@@ -1180,7 +1226,12 @@ export default function RaiseInverterTicketPage() {
             <div>
               <div className="text-4xl">Raise new inverter ticket</div>
               <br></br>
-              <Form>
+              <Form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsFormFilled(true);
+                }}
+              >
                 <CustomerDetailForm
                   handleCustomerDetailForm={setCustomerDetail}
                   customerDetail={customerDetail}
@@ -1261,10 +1312,7 @@ export default function RaiseInverterTicketPage() {
                       </div>
                     )}
                     {!isGeneratingPdf && (
-                      <Button
-                        color="warning"
-                        onClick={() => handleSubmitInverterTicket()}
-                      >
+                      <Button color="warning" type="submit">
                         Submit
                       </Button>
                     )}

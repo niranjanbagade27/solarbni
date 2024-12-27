@@ -17,6 +17,7 @@ export default function CustomerDetailForm({
               Customer Name
             </Label>
             <Input
+              required
               type="text"
               name="name"
               id="name"
@@ -36,6 +37,7 @@ export default function CustomerDetailForm({
               Customer Email ID
             </Label>
             <Input
+              required
               type="email"
               name="email"
               id="email"
@@ -57,6 +59,7 @@ export default function CustomerDetailForm({
               Customer contact number
             </Label>
             <Input
+              required
               type="number"
               name="phone"
               id="phone"
@@ -76,6 +79,7 @@ export default function CustomerDetailForm({
               Site Address <i>(60 character allowed)</i>
             </Label>
             <Input
+              required
               type="text"
               name="address"
               id="address"
@@ -98,6 +102,7 @@ export default function CustomerDetailForm({
               Site Address Pincode
             </Label>
             <Input
+              required
               type="text"
               name="pincode"
               id="pincode"
@@ -122,6 +127,7 @@ export default function CustomerDetailForm({
               Solar installer company name
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer company name"
               id="Solar installer company name"
@@ -136,6 +142,7 @@ export default function CustomerDetailForm({
               Solar installer representative
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer representative"
               id="Solar installer representative"
@@ -152,6 +159,7 @@ export default function CustomerDetailForm({
               Solar installer contact number
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer contact number"
               id="Solar installer contact number"
@@ -166,6 +174,7 @@ export default function CustomerDetailForm({
               Solar installer Email ID
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer Email ID"
               id="Solar installer Email ID"
@@ -182,6 +191,7 @@ export default function CustomerDetailForm({
               Solar installer service person
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer service person"
               id="Solar installer service person"
@@ -192,7 +202,6 @@ export default function CustomerDetailForm({
                   sollarInstallerServicePerson: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -205,6 +214,7 @@ export default function CustomerDetailForm({
               Solar installer service person contact number
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer service person contact number"
               id="Solar installer service person contact number"
@@ -217,7 +227,6 @@ export default function CustomerDetailForm({
                   ),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -229,6 +238,7 @@ export default function CustomerDetailForm({
               Solar installer office address
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer office address"
               id="Solar installer office address"
@@ -243,6 +253,7 @@ export default function CustomerDetailForm({
               Solar installer office pincode
             </Label>
             <Input
+              required
               type="text"
               name="Solar installer office pincode"
               id="Solar installer office pincode"
@@ -265,6 +276,7 @@ export default function CustomerDetailForm({
               Installed plant capacity (in kW)
             </Label>
             <Input
+              required
               type="text"
               name="Installed plant capacity (in kW)"
               id="Installed plant capacity (in kW)"
@@ -275,7 +287,6 @@ export default function CustomerDetailForm({
                   custSysCapacity: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -285,6 +296,7 @@ export default function CustomerDetailForm({
               System age (in months) [For new system enter 0]
             </Label>
             <Input
+              required
               type="text"
               name="System age (in months) [For new system enter 0]"
               id="System age (in months) [For new system enter 0]"
@@ -306,6 +318,7 @@ export default function CustomerDetailForm({
               Inverter manufacturer
             </Label>
             <Input
+              required
               type="text"
               name="Inverter manufacturer"
               id="Inverter manufacturer"
@@ -316,7 +329,6 @@ export default function CustomerDetailForm({
                   custInstalledInverterCompany: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -326,6 +338,7 @@ export default function CustomerDetailForm({
               Inverter model name
             </Label>
             <Input
+              required
               type="text"
               name="Inverter model name"
               id="Inverter model name"
@@ -336,7 +349,6 @@ export default function CustomerDetailForm({
                   custInstalledInverterModel: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -348,6 +360,7 @@ export default function CustomerDetailForm({
               Inverter Capacity (kW)
             </Label>
             <Input
+              required
               type="text"
               name="Inverter Capacity (kW)"
               id="Inverter Capacity (kW)"
@@ -358,7 +371,6 @@ export default function CustomerDetailForm({
                   custInverterCapacity: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -368,6 +380,7 @@ export default function CustomerDetailForm({
               Three or Single phase system
             </Label>
             <Input
+              required
               type="select"
               name="Three or Single phase system"
               id="Three or Single phase system"
@@ -377,7 +390,6 @@ export default function CustomerDetailForm({
                   custThreeOrSinglePhase: sanatizeHtml(e.target.value),
                 });
               }}
-              required
             >
               <option value="">Select</option>
               <option key={0} value={1}>
@@ -400,6 +412,7 @@ export default function CustomerDetailForm({
               Installed inverter (Three or single phase)
             </Label>
             <Input
+              required
               type="select"
               name="Installed inverter (Three or single phase)"
               id="Installed inverter (Three or single phase)"
@@ -411,7 +424,6 @@ export default function CustomerDetailForm({
                   ),
                 });
               }}
-              required
             >
               <option value="">Select</option>
               <option key={0} value={1}>
@@ -429,6 +441,7 @@ export default function CustomerDetailForm({
               Solar panel manufacturer
             </Label>
             <Input
+              required
               type="text"
               name="Solar panel manufacturer"
               id="Solar panel manufacturer"
@@ -439,7 +452,6 @@ export default function CustomerDetailForm({
                   custInstalledPanelCompany: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -451,6 +463,7 @@ export default function CustomerDetailForm({
               Panel Model name
             </Label>
             <Input
+              required
               type="text"
               name="Panel Model name"
               id="Panel Model name"
@@ -461,7 +474,6 @@ export default function CustomerDetailForm({
                   custInstalledPanelModel: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -471,6 +483,7 @@ export default function CustomerDetailForm({
               Solar panel type
             </Label>
             <Input
+              required
               type="text"
               name="Solar panel type"
               id="Solar panel type"
@@ -481,7 +494,6 @@ export default function CustomerDetailForm({
                   custPanelType: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -493,6 +505,7 @@ export default function CustomerDetailForm({
               DCR/Non-DCR
             </Label>
             <Input
+              required
               type="select"
               name="DCR/Non-DCR"
               id="DCR/Non-DCR"
@@ -519,6 +532,7 @@ export default function CustomerDetailForm({
               Solar panel wattage (Watt)
             </Label>
             <Input
+              required
               type="text"
               name="Solar panel wattage (Watt)"
               id="Solar panel wattage (Watt)"
@@ -529,7 +543,6 @@ export default function CustomerDetailForm({
                   custPanelWattage: sanatizeHtml(e.target.value),
                 })
               }
-              required
             />
           </FormGroup>
         </Col>
@@ -541,9 +554,10 @@ export default function CustomerDetailForm({
               for="Remote monitoring UserID (if applicable)"
               className="font-medium"
             >
-              Remote monitoring UserID (if applicable)
+              Remote monitoring UserID (if applicable, Otherwise fill NA)
             </Label>
             <Input
+              required
               type="text"
               name="Remote monitoring UserID (if applicable)"
               id="Remote monitoring UserID (if applicable)"
@@ -563,9 +577,10 @@ export default function CustomerDetailForm({
               for="Remote monitoring password (if applicable)"
               className="font-medium"
             >
-              Remote monitoring password (if applicable)
+              Remote monitoring password (if applicable, Otherwise fill NA)
             </Label>
             <Input
+              required
               type="text"
               name="Remote monitoring password (if applicable)"
               id="Remote monitoring password (if applicable)"

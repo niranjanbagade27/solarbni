@@ -144,12 +144,14 @@ Project installed by,
           <div className="font-semibold min-w-[10vw] text-2xl">
             Email Content
           </div>
-          <div className="font-medium text-lg italic text-rose-600">
-            Please add infosolarbni@gmail.com in CC while raising a ticket to
-            the manufacturer for efficient communication.
-          </div>
-          <div className="sm:w-[70vw] w-[95%]">
-            <pre>{getTicketEmailContent()}</pre>
+          <div>
+            <div className="font-medium text-md italic text-rose-600">
+              Please add infosolarbni@gmail.com in CC while raising a ticket to
+              the manufacturer for efficient communication.
+            </div>
+            <div className="sm:w-[70vw] w-[95%] mt-8">
+              <pre>{getTicketEmailContent()}</pre>
+            </div>
           </div>
           <div className="flex justify-end sm:w-[20vw]">
             {copyClipBoardBtn(getTicketEmailContent())}

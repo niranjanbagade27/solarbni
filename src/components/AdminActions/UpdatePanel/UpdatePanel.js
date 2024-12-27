@@ -183,6 +183,7 @@ export default function UpdatePanel() {
           questionSection: question.questionSection,
           question: question.question,
           questionChild: question.questionChild,
+          maxDropdownElements: question.maxDropdownElements
         };
       });
       const response = await axios.post("/api/panelfaultquestions/update", {
@@ -347,7 +348,9 @@ export default function UpdatePanel() {
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="dropdownLimit">Question Dropdown Limit</Label>
+                    <Label for="dropdownLimit">
+                      Question Dropdown Limit [ Minimum 2]
+                    </Label>
                     <Input
                       id="dropdownLimit"
                       name="dropdownLimit"
@@ -355,7 +358,7 @@ export default function UpdatePanel() {
                       type="number"
                       onChange={(e) => {
                         if (e.target.value === "") {
-                          setQuesDropdownLimit(1);
+                          setQuesDropdownLimit(2);
                         } else {
                           setQuesDropdownLimit(
                             parseInt(sanatizeHtml(e.target.value))
@@ -614,6 +617,19 @@ export default function UpdatePanel() {
                         setDropdownEditModalData({
                           ...dropdownEditModalData,
                           question: sanatizeHtml(e.target.value),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    Dropdown Limit [ Minimum 2 ]
+                    <Input
+                      type="number"
+                      value={dropdownEditModalData.maxDropdownElements}
+                      onChange={(e) => {
+                        setDropdownEditModalData({
+                          ...dropdownEditModalData,
+                          maxDropdownElements: parseInt(e.target.value),
                         });
                       }}
                     />

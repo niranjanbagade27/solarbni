@@ -157,8 +157,10 @@ export default function UpdateInverter() {
           questionSection: question.questionSection,
           question: question.question,
           questionChild: question.questionChild,
+          maxDropdownElements: question.maxDropdownElements,
         };
       });
+      console.log("quesPayload", quesPayload);
       const response = await axios.post("/api/inverterfaultquestions/update", {
         questions: quesPayload,
       });
@@ -350,7 +352,9 @@ export default function UpdateInverter() {
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="dropdownLimit">Question Dropdown Limit</Label>
+                    <Label for="dropdownLimit">
+                      Question Dropdown Limit [ Minimum 2]
+                    </Label>
                     <Input
                       id="dropdownLimit"
                       name="dropdownLimit"
@@ -358,7 +362,7 @@ export default function UpdateInverter() {
                       type="number"
                       onChange={(e) => {
                         if (e.target.value === "") {
-                          setQuesDropdownLimit(1);
+                          setQuesDropdownLimit(2);
                         } else {
                           setQuesDropdownLimit(
                             parseInt(sanatizeHtml(e.target.value))
@@ -643,6 +647,19 @@ export default function UpdateInverter() {
                         setDropdownEditModalData({
                           ...dropdownEditModalData,
                           question: sanatizeHtml(e.target.value),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    Dropdown Limit [ Minimum 2 ]
+                    <Input
+                      type="number"
+                      value={dropdownEditModalData.maxDropdownElements}
+                      onChange={(e) => {
+                        setDropdownEditModalData({
+                          ...dropdownEditModalData,
+                          maxDropdownElements: parseInt(e.target.value),
                         });
                       }}
                     />
