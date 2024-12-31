@@ -640,7 +640,7 @@ export default function RaisePanelTicketPage() {
           )}
           {!verifyingUser && isVerified._id && !isQuestionLoading && (
             <div>
-              <div className="text-4xl">Raise new inverter ticket</div>
+              <div className="text-4xl">Raise new panel ticket</div>
               <br></br>
               <Form
                 onSubmit={(e) => {
