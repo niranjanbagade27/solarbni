@@ -76,14 +76,14 @@ export default function CustomerDetailForm({
         <Col md={6}>
           <FormGroup>
             <Label for="address" className="font-medium">
-              Site Address <i>(60 character allowed)</i>
+              Site Address <i>(50 character allowed)</i>
             </Label>
             <Input
               required
               type="text"
               name="address"
               id="address"
-              maxLength={60}
+              maxLength={50}
               placeholder="Enter site address"
               onChange={(e) =>
                 handleCustomerDetailForm({
