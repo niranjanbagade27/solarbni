@@ -365,7 +365,7 @@ export default function RaisePanelTicketPage() {
     pdf.text(`Date : ${new Date().toDateString()}`, 230, 15);
     pdf.setFontSize(18);
     pdf.text(
-      `Subject: Request for service support for Solar PV system`,
+      `Subject: Request for service support for Solar PV system : Panel`,
       20,
       35
     );
@@ -383,11 +383,11 @@ export default function RaisePanelTicketPage() {
     pdf.text(splitEmailHeader, 27, 60);
     pdf.text(`Looking forward to your positive feedback.`, 27, 78);
     pdf.text(`Thanks, and regards,`, 20, 90);
-    pdf.text(`${customerDetail.custName}`, 20, 100);
-    pdf.text(`${customerDetail.custPhone}`, 20, 110);
+    pdf.text(`Customer Name : ${customerDetail.custName}`, 23, 100);
+    pdf.text(`Customer Phone : ${customerDetail.custPhone}`, 23, 110);
     pdf.text(`Project installed by,`, 20, 130);
-    pdf.text(`${isVerified.fullName}`, 20, 140);
-    pdf.text(`${isVerified.companyName}`, 20, 150);
+    pdf.text(`Contractor Name : ${isVerified.fullName}`, 23, 140);
+    pdf.text(`Contractor Company : ${isVerified.companyName}`, 23, 150);
     pdf.text(
       `Service person : ${customerDetail.sollarInstallerServicePerson}`,
       20,
@@ -558,7 +558,7 @@ export default function RaisePanelTicketPage() {
     pdf.text(`${customerDetail.custSysCapacity} kW`, 125, 85);
     const splitAddress = pdf.splitTextToSize(customerDetail.custAddress, 150);
     pdf.text(splitAddress, 125, 95);
-    pdf.text(`${customerDetail.custPincode}`, 125, 111);
+    pdf.text(`${customerDetail.custPincode}`, 125, 104);
     pdf.text("Installed by,", 125, 120);
     pdf.text(isVerified.companyName, 125, 130);
     pdf.text(new Date().toDateString(), 125, 140);
@@ -596,7 +596,7 @@ export default function RaisePanelTicketPage() {
     const pdfBlob = await uploadPdf({
       pdfFileName: `${
         customerDetail.custInstalledPanelCompany
-      }_Panel${customerDetail.custName.split(" ".join("_"))}_${
+      }_Panel${customerDetail.custName.split(" ").join("_")}_${
         customerDetail.custSysCapacity
       }kW`,
       pdf,

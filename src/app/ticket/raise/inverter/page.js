@@ -342,7 +342,7 @@ export default function RaiseInverterTicketPage() {
     pdf.text(`Date : ${new Date().toDateString()}`, 230, 15);
     pdf.setFontSize(18);
     pdf.text(
-      `Subject: Request for service support for Solar PV system`,
+      `Subject: Request for service support for Solar PV system : Inverter`,
       20,
       35
     );
@@ -360,11 +360,11 @@ export default function RaiseInverterTicketPage() {
     pdf.text(splitEmailHeader, 27, 60);
     pdf.text(`Looking forward to your positive feedback.`, 27, 78);
     pdf.text(`Thanks, and regards,`, 20, 90);
-    pdf.text(`${customerDetail.custName}`, 20, 100);
-    pdf.text(`${customerDetail.custPhone}`, 20, 110);
+    pdf.text(`Customer name : ${customerDetail.custName}`, 23, 100);
+    pdf.text(`Customer phone : ${customerDetail.custPhone}`, 23, 110);
     pdf.text(`Project installed by,`, 20, 130);
-    pdf.text(`${isVerified.fullName}`, 20, 140);
-    pdf.text(`${isVerified.companyName}`, 20, 150);
+    pdf.text(`Contractor name : ${isVerified.fullName}`, 23, 140);
+    pdf.text(`Contractor company : ${isVerified.companyName}`, 23, 150);
     pdf.text(
       `Service person : ${customerDetail.sollarInstallerServicePerson}`,
       20,
@@ -510,12 +510,42 @@ export default function RaiseInverterTicketPage() {
   };
 
   const generatePdf = async () => {
-    // console.log("submitting ticket");
+    console.log("submitting ticket");
     // console.log(customerDetail);
     // console.log(singlePhaseAnswers);
     // console.log(threePhaseAnswers);
-    // console.log(inverterAnswersOne);
     // console.log(inverterAnswersTwo);
+    let inverterAnswersOneNew = {};
+    Object.keys(inverterAnswersOne)
+      .sort((a, b) => {
+        const aParts = a.split("-").map(Number);
+        const bParts = b.split("-").map(Number);
+        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+          if (aParts[i] !== bParts[i]) {
+            return (aParts[i] || 0) - (bParts[i] || 0);
+          }
+        }
+        return 0;
+      })
+      .forEach((key, index) => {
+        inverterAnswersOneNew[index] = inverterAnswersOne[key];
+      });
+    let inverterAnswersTwoNew = {};
+    Object.keys(inverterAnswersTwo)
+      .sort((a, b) => {
+        const aParts = a.split("-").map(Number);
+        const bParts = b.split("-").map(Number);
+        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+          if (aParts[i] !== bParts[i]) {
+            return (aParts[i] || 0) - (bParts[i] || 0);
+          }
+        }
+        return 0;
+      })
+      .forEach((key, index) => {
+        inverterAnswersTwoNew[index] = inverterAnswersTwo[key];
+      });
+    console.log(inverterAnswersTwoNew);
     const pageWidth = 297;
     const pageHeight = 210;
     const pdf = new jsPDF("landscape", "mm", "a4");
@@ -538,10 +568,10 @@ export default function RaiseInverterTicketPage() {
     pdf.text(`${customerDetail.custSysCapacity} kW`, 125, 85);
     const splitAddress = pdf.splitTextToSize(customerDetail.custAddress, 150);
     pdf.text(splitAddress, 125, 95);
-    pdf.text(`${customerDetail.custPincode}`, 125, 118);
-    pdf.text("Installed by,", 125, 128);
-    pdf.text(isVerified.companyName, 125, 138);
-    pdf.text(new Date().toDateString(), 125, 148);
+    pdf.text(`${customerDetail.custPincode}`, 125, 104);
+    pdf.text("Installed by,", 125, 120);
+    pdf.text(isVerified.companyName, 125, 130);
+    pdf.text(new Date().toDateString(), 125, 140);
     pdf.addPage();
     pdf.setTextColor(0, 0, 0);
     addEmailContent(pdf);
@@ -551,12 +581,12 @@ export default function RaiseInverterTicketPage() {
     addSolarInstallerInformation(pdf);
     pdf.addPage();
     addSystemInformation(pdf);
-    Object.keys(inverterAnswersOne).forEach((key) => {
+    Object.keys(inverterAnswersOneNew).forEach((key) => {
       addNewPage({
         pdf,
-        question: inverterAnswersOne[key].question,
-        answer: inverterAnswersOne[key]?.answer,
-        photo: inverterAnswersOne[key]?.photo,
+        question: inverterAnswersOneNew[key].question,
+        answer: inverterAnswersOneNew[key]?.answer,
+        photo: inverterAnswersOneNew[key]?.photo,
       });
     });
     if (
@@ -583,12 +613,12 @@ export default function RaiseInverterTicketPage() {
         });
       });
     }
-    Object.keys(inverterAnswersTwo).forEach((key) => {
+    Object.keys(inverterAnswersTwoNew).forEach((key) => {
       addNewPage({
         pdf,
-        question: inverterAnswersTwo[key].question,
-        answer: inverterAnswersTwo[key]?.answer,
-        photo: inverterAnswersTwo[key]?.photo,
+        question: inverterAnswersTwoNew[key].question,
+        answer: inverterAnswersTwoNew[key]?.answer,
+        photo: inverterAnswersTwoNew[key]?.photo,
       });
     });
     const totalPages = pdf.internal.getNumberOfPages();
@@ -1150,7 +1180,7 @@ export default function RaiseInverterTicketPage() {
     const pdfBlob = await uploadPdf({
       pdfFileName: `${
         customerDetail.custInstalledInverterCompany
-      }_Inverter_${customerDetail.custName.split(" ".join("_"))}_${
+      }_Inverter_${customerDetail.custName.split(" ").join("_")}_${
         customerDetail.custSysCapacity
       }kW`,
       pdf,
