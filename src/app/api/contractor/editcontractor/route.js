@@ -4,6 +4,14 @@ import sanitizeHtml from "sanitize-html";
 import dbConnect from "@/lib/mongodb";
 import { userRoles } from "@/constants/role";
 export const dynamic = "force-dynamic";
+import bcrypt from "bcrypt";
+
+const getCrypt = async (password) => {
+  const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+};
+
 export async function PUT(request) {
   try {
     await dbConnect();
@@ -26,6 +34,10 @@ export async function PUT(request) {
     const sanitizedPassword = sanitizeHtml(password);
     const sanitizedOfficeAddress = sanitizeHtml(officeAddress);
     const sanitizedPincode = sanitizeHtml(pincode);
+    let hashedPassword;
+    if (sanitizedPassword) {
+      hashedPassword = await getCrypt(sanitizedPassword);
+    }
     const getUser = await User.findOne({
       email: sanitizedEmail,
       role: userRoles.CONTRACTOR,
@@ -49,7 +61,7 @@ export async function PUT(request) {
         phone: sanitizedPhone,
         officeAddress: sanitizedOfficeAddress,
         pincode: sanitizedPincode,
-        ...(sanitizedPassword && { password: sanitizedPassword }),
+        ...(sanitizedPassword && { password: hashedPassword }),
       },
       { new: true, w: "majority" }
     ).select("-password");

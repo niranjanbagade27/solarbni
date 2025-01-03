@@ -436,32 +436,12 @@ export default function UpdateContractor() {
                       <Label for="email">Email</Label>
                       <Input
                         id="email"
+                        disabled={true}
                         value={newContractorData.email}
                         name="email"
                         placeholder="Enter email"
                         type="email"
-                        invalid={!!errors.emailError}
-                        onChange={(e) => {
-                          setNewContractorData({
-                            ...newContractorData,
-                            email: sanatizeHtml(e.target.value),
-                          });
-                          const emailRegex =
-                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                          const test = emailRegex.test(e.target.value);
-                          if (!test) {
-                            setErrors({
-                              ...errors,
-                              emailError: "Invalid Email",
-                            });
-                          } else {
-                            setErrors({ ...errors, emailError: "" });
-                          }
-                        }}
                       />
-                      {errors.emailError && (
-                        <FormFeedback>{errors.emailError}</FormFeedback>
-                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -480,7 +460,7 @@ export default function UpdateContractor() {
                             gstNumber: sanatizeHtml(e.target.value),
                           });
                           const gstRegex =
-                            /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}$/;
+                            /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}[A-Z]{1}$/;
                           const test = gstRegex.test(e.target.value);
                           if (!test) {
                             if (e.target.value.length > 0) {
@@ -584,8 +564,20 @@ export default function UpdateContractor() {
                             ...newContractorData,
                             password: sanatizeHtml(e.target.value),
                           });
+                          if (e.target.value.length < 6) {
+                            setErrors({
+                              ...errors,
+                              passwordError:
+                                "Minimum password length should be 6",
+                            });
+                          } else {
+                            setErrors({ ...errors, passwordError: "" });
+                          }
                         }}
                       />
+                      {errors.passwordError && (
+                        <FormFeedback>{errors.passwordError}</FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
