@@ -34,6 +34,7 @@ export async function POST(request) {
       }
     );
   } catch (e) {
+    console.log("Error while updating inverter question", e);
     return NextResponse.json(
       {
         message: "Error while updating inverter question",

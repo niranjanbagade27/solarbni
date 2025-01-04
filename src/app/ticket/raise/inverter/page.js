@@ -554,7 +554,7 @@ export default function RaiseInverterTicketPage() {
       .forEach((key, index) => {
         inverterAnswersTwoNew[index] = inverterAnswersTwo[key];
       });
-    console.log(inverterAnswersTwoNew);
+    // console.log(inverterAnswersTwoNew);
     const pageWidth = 297;
     const pageHeight = 210;
     const pdf = new jsPDF("landscape", "mm", "a4");
@@ -1190,11 +1190,7 @@ export default function RaiseInverterTicketPage() {
     setIsGeneratingPdf(true);
     const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${
-        customerDetail.custInstalledInverterCompany
-      }_Inverter_${customerDetail.custName.split(" ").join("_")}_${
-        customerDetail.custSysCapacity
-      }kW`,
+      pdfFileName: ticketName.current,
       pdf,
     });
     setIsGeneratingPdf(false);

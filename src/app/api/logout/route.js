@@ -8,6 +8,7 @@ export async function GET(request) {
     response.cookies.set("token", "", { maxAge: -1 });
     return response;
   } catch (e) {
+    console.log("Error while logging out", e);
     return NextResponse.json(
       {
         message: "Error while logging out",

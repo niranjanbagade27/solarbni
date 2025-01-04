@@ -9,9 +9,10 @@ export async function POST(request) {
     const body = await request.json();
     const { email } = body;
     const sanitizedEmail = sanitizeHtml(email);
-    const getUser = await User.findOne({ email: sanitizedEmail, role: userRoles.OEM }).select(
-      "-password"
-    );
+    const getUser = await User.findOne({
+      email: sanitizedEmail,
+      role: userRoles.OEM,
+    }).select("-password");
     if (!getUser) {
       return NextResponse.json(
         {
@@ -31,6 +32,7 @@ export async function POST(request) {
       }
     );
   } catch (e) {
+    console.log("Error while searching oem", e);
     return NextResponse.json(
       {
         message: "Error while searching oem",

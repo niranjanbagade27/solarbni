@@ -606,11 +606,7 @@ export default function RaisePanelTicketPage() {
     setIsGeneratingPdf(true);
     const pdf = await generatePdf();
     const pdfBlob = await uploadPdf({
-      pdfFileName: `${
-        customerDetail.custInstalledPanelCompany
-      }_Panel${customerDetail.custName.split(" ").join("_")}_${
-        customerDetail.custSysCapacity
-      }kW`,
+      pdfFileName: ticketName.current,
       pdf,
     });
     setIsGeneratingPdf(false);

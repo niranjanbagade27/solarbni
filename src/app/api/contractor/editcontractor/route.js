@@ -67,6 +67,7 @@ export async function PUT(request) {
     ).select("-password");
     return NextResponse.json({ user: updatedUser });
   } catch (e) {
+    console.log("Error while updating contractor", e);
     return NextResponse.json(
       {
         message: "Error while updating contractor",

@@ -55,7 +55,7 @@ export async function POST(request) {
       return response;
     }
   } catch (e) {
-    console.log("inside catch block", e);
+    console.log("Error while logging in", e);
     return NextResponse.json(
       {
         message: "Error while logging in",
