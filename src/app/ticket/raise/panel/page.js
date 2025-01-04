@@ -829,7 +829,7 @@ export default function RaisePanelTicketPage() {
           pdfUrl={pdfUrl}
           contractorDetail={isVerified}
           questionArray={generateQuestionArray()}
-          tikcetType="Panel"
+          ticketType="Panel"
           ticketName={ticketName.current}
         />
       )}
