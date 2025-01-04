@@ -511,9 +511,11 @@ export default function RaiseInverterTicketPage() {
   };
 
   const generatePdf = async () => {
-    const genTicketName = `${
-      customerDetail.custInstalledInverterCompany
-    }_Inverter_${customerDetail.custSysCapacity}_${new Date().getDate()}${
+    const genTicketName = `${customerDetail.custInstalledInverterCompany
+      .split(" ")
+      .join("_")}_Inverter_${
+      customerDetail.custSysCapacity
+    }_${new Date().getDate()}${
       new Date().getMonth() + 1
     }${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`;
     ticketName.current = genTicketName;

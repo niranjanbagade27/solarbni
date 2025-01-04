@@ -534,7 +534,9 @@ export default function RaisePanelTicketPage() {
   };
 
   const generatePdf = async () => {
-    const genTicketName = `${customerDetail.custInstalledPanelCompany}_Panel_${
+    const genTicketName = `${customerDetail.custInstalledInverterCompany
+      .split(" ")
+      .join("_")}_Panel_${
       customerDetail.custSysCapacity
     }_${new Date().getDate()}${
       new Date().getMonth() + 1
