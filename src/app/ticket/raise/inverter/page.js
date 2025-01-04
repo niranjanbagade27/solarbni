@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import useVerifyUser from "@/hooks/verifyUser";
 import { userRoles } from "@/constants/role";
@@ -87,6 +87,7 @@ export default function RaiseInverterTicketPage() {
   const [isPDFPreviewLoading, setIsPDFPreviewLoading] = useState(false);
   let pdfQuesNo = 1;
   const [isFormFilled, setIsFormFilled] = useState(false);
+  const ticketName = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -510,6 +511,12 @@ export default function RaiseInverterTicketPage() {
   };
 
   const generatePdf = async () => {
+    const genTicketName = `${
+      customerDetail.custInstalledInverterCompany
+    }_Inverter_${customerDetail.custSysCapacity}_${new Date().getDate()}${
+      new Date().getMonth() + 1
+    }${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`;
+    ticketName.current = genTicketName;
     console.log("submitting ticket");
     // console.log(customerDetail);
     // console.log(singlePhaseAnswers);
@@ -555,6 +562,9 @@ export default function RaiseInverterTicketPage() {
     pdf.setFillColor(0, 0, 0, 250);
     pdf.rect(0, pageHeight - bottomHeight, pageWidth, bottomHeight, "F");
     pdf.addImage("/images/solarbni_logo.png", "JPEG", 30, 180, 50, 25);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(12);
+    pdf.text(`Ticket name : ${genTicketName}`, 135, 195);
     pdf.addImage("/images/white_bg.jpg", "JPEG", 110, 20, 170, 150);
     pdf.setFontSize(30);
     pdf.setTextColor(150, 75, 0);
@@ -1379,6 +1389,7 @@ export default function RaiseInverterTicketPage() {
               contractorDetail={isVerified}
               questionArray={generateQuestionArray()}
               ticketType="Inverter"
+              ticketName={ticketName.current}
             />
           )}
         </>

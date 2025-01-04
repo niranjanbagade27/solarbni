@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button } from "reactstrap";
 export function GeneratedTicketDetails({
@@ -9,17 +9,10 @@ export function GeneratedTicketDetails({
   contractorDetail,
   ticketType,
   questionArray,
+  ticketName,
 }) {
-  useEffect(() => {
-    console.log(questionArray);
-  }, []);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
 
-  const ticketName = useRef(
-    `SOLARBNI_${ticketType}_${
-      customerDetail.custSysCapacity
-    }_${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}_${new Date().getHours()}${new Date().getMinutes()}`
-  );
   const getTicketEmailContent = () => {
     return `Respected ${
       ticketType === "Panel"
@@ -52,41 +45,51 @@ Project installed by,
   `;
   };
   const fetchData = async () => {
-    try {
-      const response = await axios.post(`/api/raiseticket`, {
-        ticketName: ticketName.current,
-        contractorName: contractorDetail.fullName,
-        contactorComapny: contractorDetail.companyName,
-        contractorEmail: contractorDetail.email,
-        ticketType,
-        customerName: customerDetail.custName,
-        customerEmail: customerDetail.custEmail,
-        customerPhone: customerDetail.custPhone,
-        customerAddress: customerDetail.custAddress,
-        customerCapacity: customerDetail.custSysCapacity,
-        customerPincode: customerDetail.custPincode,
-        installedInverterCompany: customerDetail.custInstalledInverterCompany,
-        installedInverterModel: customerDetail.custInstalledInverterModel,
-        installedPanelCompany: customerDetail.custInstalledPanelCompany,
-        installedPanelModel: customerDetail.custInstalledPanelModel,
-        pdfUrl: pdfUrl,
-        ticketStatus: "open",
-        ticketCreationDate: new Date().toISOString(),
-        ticketEmailContent: getTicketEmailContent(),
-        sollarInstallerServicePerson:
-          customerDetail.sollarInstallerServicePerson,
-        sollarInstallerServicePersonPhone:
-          customerDetail.sollarInstallerServicePersonPhone,
-        questions: questionArray,
-      });
-      toast("Ticket Saved to DB");
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-      toast("Error while saving ticket. Check logs");
+    let attempts = 0;
+    while (attempts < 5) {
+      try {
+        const response = await axios.post(`/api/raiseticket`, {
+          ticketName,
+          contractorName: contractorDetail.fullName,
+          contactorComapny: contractorDetail.companyName,
+          contractorEmail: contractorDetail.email,
+          ticketType,
+          customerName: customerDetail.custName,
+          customerEmail: customerDetail.custEmail,
+          customerPhone: customerDetail.custPhone,
+          customerAddress: customerDetail.custAddress,
+          customerCapacity: customerDetail.custSysCapacity,
+          customerPincode: customerDetail.custPincode,
+          installedInverterCompany: customerDetail.custInstalledInverterCompany,
+          installedInverterModel: customerDetail.custInstalledInverterModel,
+          installedPanelCompany: customerDetail.custInstalledPanelCompany,
+          installedPanelModel: customerDetail.custInstalledPanelModel,
+          pdfUrl: pdfUrl,
+          ticketStatus: "open",
+          ticketCreationDate: new Date().toISOString(),
+          ticketEmailContent: getTicketEmailContent(),
+          sollarInstallerServicePerson:
+            customerDetail.sollarInstallerServicePerson,
+          sollarInstallerServicePersonPhone:
+            customerDetail.sollarInstallerServicePersonPhone,
+          questions: questionArray,
+        });
+        toast("Ticket Saved to DB");
+        console.log(response.data);
+        break;
+      } catch (error) {
+        attempts++;
+        console.error(error);
+        if (attempts < 5) {
+          toast(`Attempt ${attempts} failed. Retrying...`);
+        } else {
+          toast("Error while saving ticket after 5 attempts. Check logs");
+        }
+      }
     }
   };
   useEffect(() => {
+    toast("Ticket creation in progress. Please wait...");
     fetchData();
   }, []);
 
@@ -116,9 +119,9 @@ Project installed by,
       <div className="flex flex-col sm:gap-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-10 justify-start items-start w-full">
           <div className="font-semibold min-w-[10vw] text-2xl">Ticket ID</div>
-          <div className="sm:w-[70vw]">{ticketName.current}</div>
+          <div className="sm:w-[70vw]">{ticketName}</div>
           <div className="flex justify-end sm:w-[20vw]">
-            {copyClipBoardBtn(ticketName.current)}
+            {copyClipBoardBtn(ticketName)}
           </div>
         </div>
         <hr></hr>
