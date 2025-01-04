@@ -23,6 +23,7 @@ export async function POST(request) {
       );
     }
   } catch (e) {
+    console.log("Error while fetching ticket details by this contractor", e);
     return NextResponse.json(
       {
         message: "Error while fetching ticket details by this contractor",

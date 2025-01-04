@@ -32,6 +32,7 @@ export async function POST(request) {
       }
     );
   } catch (e) {
+    console.log("Error while searching contractor", e);
     return NextResponse.json(
       {
         message: "Error while searching contractor",

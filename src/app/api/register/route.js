@@ -7,7 +7,6 @@ export async function POST(request) {
   try {
     await dbConnect();
     const body = await request.json();
-    console.log("Register body ", body);
     const {
       email,
       password,
@@ -49,6 +48,7 @@ export async function POST(request) {
       user.toObject();
     return NextResponse.json({ user: userDetailsWithoutPassword });
   } catch (e) {
+    console.log("Error while registering user", e);
     return NextResponse.json(
       {
         message: "Error while creating user",

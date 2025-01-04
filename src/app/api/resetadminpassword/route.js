@@ -5,14 +5,12 @@ import dbConnect from "@/lib/mongodb";
 import { userRoles } from "@/constants/role";
 export const dynamic = "force-dynamic";
 import bcrypt from "bcrypt";
-import { randomBytes } from 'crypto';
-
+import { randomBytes } from "crypto";
 
 export async function PUT(request) {
   try {
     const body = await request.json();
     const { password } = body;
-    console.log(password)
     const getUser = await User.findOne({
       role: userRoles.ADMIN,
     }).select("-password");
@@ -28,7 +26,6 @@ export async function PUT(request) {
     }
     const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(hashedPassword);
     const updatedUser = await User.findOneAndUpdate(
       { role: userRoles.ADMIN },
       {
@@ -40,7 +37,7 @@ export async function PUT(request) {
         password: hashedPassword,
       },
       { new: true, w: "majority" }
-    )
+    );
 
     return NextResponse.json(
       {
@@ -51,10 +48,10 @@ export async function PUT(request) {
       }
     );
   } catch (e) {
-    console.log(e)
+    console.log("Error while updating admin password", e);
     return NextResponse.json(
       {
-        message: "Error while searching contractor",
+        message: "Error while updating admin password",
       },
       {
         status: 500,

@@ -5,14 +5,11 @@ import dbConnect from "@/lib/mongodb";
 import { userRoles } from "@/constants/role";
 export const dynamic = "force-dynamic";
 import bcrypt from "bcrypt";
-import { randomBytes } from 'crypto';
-
 
 export async function POST(request) {
   try {
     const body = await request.json();
     const { email } = body;
-    console.log(email)
     const sanitizedEmail = sanitizeHtml(email);
     const getUser = await User.findOne({
       email: sanitizedEmail,
@@ -29,15 +26,17 @@ export async function POST(request) {
       );
     }
     const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-    let randomString = ''
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    
+    let randomString = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
     for (let i = 0; i < 6; i++) {
-      randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+      randomString += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
     }
 
     const hashedPassword = await bcrypt.hash(randomString, salt);
-    console.log(randomString);
 
     const updatedUser = await User.findOneAndUpdate(
       { email: getUser.email, role: userRoles.CONTRACTOR },
@@ -50,22 +49,22 @@ export async function POST(request) {
         password: hashedPassword,
       },
       { new: true, w: "majority" }
-    )
+    );
 
     return NextResponse.json(
       {
         user: updatedUser,
-        plainPassword: randomString
+        plainPassword: randomString,
       },
       {
         status: 200,
       }
     );
   } catch (e) {
-    console.log(e)
+    console.log("Error while resting password", e);
     return NextResponse.json(
       {
-        message: "Error while searching contractor",
+        message: "Error while resting password",
       },
       {
         status: 500,

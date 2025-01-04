@@ -68,6 +68,7 @@ export async function POST(request) {
     await ticket.save();
     return NextResponse.json({ ticket });
   } catch (e) {
+    console.log("Error while creating ticket", e);
     return NextResponse.json(
       {
         message: "Error while creating ticket",

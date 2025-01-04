@@ -44,6 +44,7 @@ export async function POST(request) {
       }
     );
   } catch (e) {
+    console.log("Error while adding new question", e);
     return NextResponse.json(
       {
         message: "Error while adding new question",
@@ -68,9 +69,10 @@ export async function GET() {
       }
     );
   } catch (e) {
+    console.log("Error while fetching panel questions", e);
     return NextResponse.json(
       {
-        message: "Error while fetching inverter questions",
+        message: "Error while fetching panel questions",
       },
       {
         status: 500,
@@ -107,6 +109,7 @@ export async function PUT(request) {
       }
     );
   } catch (e) {
+    console.log("Error while deleting question", e);
     return NextResponse.json(
       {
         message: "Error while updating question",
@@ -131,6 +134,7 @@ export async function DELETE(request) {
       }
     );
   } catch (e) {
+    console.log("Error while deleting all question", e);
     return NextResponse.json(
       {
         message: "Error while deleting all question",

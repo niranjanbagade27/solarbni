@@ -11,6 +11,7 @@ export async function GET(request) {
       .exec();
     return NextResponse.json({ users: getAllUsers }, { status: 200 });
   } catch (e) {
+    console.log("Error while getting all contractors", e);
     return NextResponse.json(
       {
         message: "Error while fetching contractors",

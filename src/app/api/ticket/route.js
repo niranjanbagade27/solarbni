@@ -22,6 +22,7 @@ export async function POST(request) {
       );
     }
   } catch (e) {
+    console.log("Error while fetching ticket", e);
     return NextResponse.json(
       {
         message: "Error while fetching ticket",
@@ -50,6 +51,7 @@ export async function GET(request) {
       );
     }
   } catch (e) {
+    console.log("Error while fetching ticket details", e);
     return NextResponse.json(
       {
         message: "Error while fetching ticket details",

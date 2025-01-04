@@ -42,6 +42,7 @@ export async function PUT(request) {
     ).select("-password");
     return NextResponse.json({ user: updatedUser });
   } catch (e) {
+    console.log("Error while updating oem", e);
     return NextResponse.json(
       {
         message: "Error while updating oem",

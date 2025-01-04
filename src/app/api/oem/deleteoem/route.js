@@ -29,6 +29,7 @@ export async function POST(request) {
     });
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (e) {
+    console.log("Error while deleting oem", e);
     return NextResponse.json(
       {
         message: "Error while deleting oem",

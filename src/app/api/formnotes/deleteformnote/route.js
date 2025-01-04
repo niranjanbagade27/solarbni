@@ -7,10 +7,10 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const { id } = body;
-    console.log(id);
     const deletedFormNote = await FormNote.findByIdAndDelete(id);
     return NextResponse.json(deletedFormNote, { status: 200 });
   } catch (e) {
+    console.log("Error while deleting form note", e);
     return NextResponse.json(
       {
         message: "Error deleting form note",

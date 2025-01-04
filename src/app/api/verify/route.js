@@ -42,6 +42,7 @@ export async function GET(request) {
       }
     );
   } catch (e) {
+    console.log("Error while verifying user", e);
     return NextResponse.json(
       {
         message: "Error while verifying user",
