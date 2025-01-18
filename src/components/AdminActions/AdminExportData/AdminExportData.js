@@ -16,8 +16,8 @@ import {
 import { userRoles } from "@/constants/role";
 import { toast } from "react-toastify";
 
-function removeCommas(str){
-  return str.replace(/,/g, '.');;
+function removeCommas(str) {
+  return str.replace(/,/g, ".");
 }
 
 export default function AdminExportPage({ loggedInUser }) {
@@ -47,7 +47,14 @@ export default function AdminExportPage({ loggedInUser }) {
           .filter((key) => !excludedKeys.includes(key))
           .map((key) => {
             if (Array.isArray(ticket[key])) {
-              return ticket[key].map((item) => `${removeCommas(item.question)} :: ${removeCommas(item.answer)}`).join(",");
+              return ticket[key]
+                .map(
+                  (item) =>
+                    `${removeCommas(item.question)} :: ${removeCommas(
+                      item.answer
+                    )}`
+                )
+                .join(",");
             }
             return ticket[key];
           })
@@ -67,16 +74,28 @@ export default function AdminExportPage({ loggedInUser }) {
 
   const handleAllExport = async () => {
     setIsLoadingAllExport(true);
-    try {
-      const {
-        data: { ticketData },
-      } = await axios.get("/api/ticket");
-      convertToCSV(ticketData);
-      setIsLoadingAllExport(false);
-    } catch (err) {
-      console.log(err);
-      toast(err.response.data.message);
-      setIsLoadingAllExport(false);
+    let attempts = 0;
+    const maxAttempts = 3;
+    while (attempts < maxAttempts) {
+      try {
+        const {
+          data: { ticketData },
+        } = await axios.get("/api/ticket", { timeout: 30000 });
+        convertToCSV(ticketData);
+        setIsLoadingAllExport(false);
+        break;
+      } catch (err) {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          console.log(err);
+          if (err.message.includes("timed out")) {
+            toast("The request timed out. Please try again.");
+          } else {
+            toast(err.response.data.message);
+          }
+          setIsLoadingAllExport(false);
+        }
+      }
     }
   };
 
